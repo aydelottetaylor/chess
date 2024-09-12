@@ -1,11 +1,14 @@
 package chess;
 
+import lombok.EqualsAndHashCode;
+
 /**
  * Represents moving a chess piece on a chessboard
  * <p>
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+@EqualsAndHashCode
 public class ChessMove {
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,

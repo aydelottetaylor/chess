@@ -13,6 +13,16 @@
 
     <packaging>jar</packaging>
 
+    <dependencies>
+        <!-- Lombok Dependency -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.28</version> <!-- or the latest version -->
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
     <build>
         <finalName>shared</finalName>
         <plugins>
