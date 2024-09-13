@@ -1,6 +1,6 @@
 package chess;
 
-import lombok.EqualsAndHashCode;
+// import lombok.EqualsAndHashCode;
 
 /**
  * Represents a single square position on a chess board
@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-@EqualsAndHashCode
+// @EqualsAndHashCode
 public class ChessPosition {
 
     public final int row;

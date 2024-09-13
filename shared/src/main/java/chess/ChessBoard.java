@@ -1,6 +1,6 @@
 package chess;
 
-import lombok.EqualsAndHashCode;
+// import lombok.EqualsAndHashCode;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-@EqualsAndHashCode
+// @EqualsAndHashCode
 public class ChessBoard {
     public ChessPiece[][] board = new ChessPiece[9][9];
     

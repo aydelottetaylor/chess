@@ -1,7 +1,7 @@
 package chess;
 
 import java.util.Collection;
-import lombok.EqualsAndHashCode;
+// import lombok.EqualsAndHashCode;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-@EqualsAndHashCode
+// @EqualsAndHashCode
 public class ChessGame {
 
     public ChessGame() {

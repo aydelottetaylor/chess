@@ -1,12 +1,12 @@
 package chess;
 
-import java.util.Collection;
-import lombok.EqualsAndHashCode;
 import java.util.ArrayList;
+// import java.util.lombok
+import java.util.Collection;
 
-import javax.swing.plaf.basic.BasicBorders;
-import chess.ChessPosition;
-import jdk.jfr.Timespan;
+// import javax.swing.plaf.basic.BasicBorders;
+// import chess.ChessPosition;
+// import jdk.jfr.Timespan;
 
 /**
  * Represents a single chess piece
@@ -14,7 +14,7 @@ import jdk.jfr.Timespan;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-@EqualsAndHashCode
+// @EqualsAndHashCode
 public class ChessPiece {
     public ChessGame.TeamColor pieceColor;
     public ChessPiece.PieceType type;
