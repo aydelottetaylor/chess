@@ -148,6 +148,9 @@ public class ChessPiece {
             // Check for promotion
             if(forwardOne.getRow() == 1 || forwardOne.getRow() == 8) {
                 moves.add(new ChessMove(myPosition, forwardOne, ChessPiece.PieceType.QUEEN));
+                moves.add(new ChessMove(myPosition, forwardOne, ChessPiece.PieceType.BISHOP));
+                moves.add(new ChessMove(myPosition, forwardOne, ChessPiece.PieceType.KNIGHT));
+                moves.add(new ChessMove(myPosition, forwardOne, ChessPiece.PieceType.ROOK));
             } else {
                 moves.add(new ChessMove(myPosition, forwardOne, null));
             }
@@ -183,6 +186,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, newPosition, null));
             } else if (pieceAtNewPos.getTeamColor() != this.pieceColor) {
                 moves.add(new ChessMove(myPosition, newPosition, null));
+                break;
             } else {
                 break;
             }
@@ -208,6 +212,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, newPosition, null));
             } else if (pieceAtNewPos.getTeamColor() != this.pieceColor) {
                 moves.add(new ChessMove(myPosition, newPosition, null));
+                break;
             } else {
                 break;
             }
@@ -221,6 +226,9 @@ public class ChessPiece {
             if(targetPiece != null && targetPiece.getTeamColor() != this.pieceColor) {
                 if(newRow == 1 || newRow == 8) {
                     moves.add(new ChessMove(myPosition, capturePosition, ChessPiece.PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, capturePosition, ChessPiece.PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, capturePosition, ChessPiece.PieceType.KNIGHT));
+                    moves.add(new ChessMove(myPosition, capturePosition, ChessPiece.PieceType.ROOK));
                 } else {
                     moves.add(new ChessMove(myPosition, capturePosition, null));
                 }
