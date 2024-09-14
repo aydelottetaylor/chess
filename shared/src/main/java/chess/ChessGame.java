@@ -16,6 +16,11 @@ public class ChessGame {
 
     }
 
+    @Override
+    public String toString() {
+        return "ChessGame{}";
+    }
+
     /**
      * @return Which team's turn it is
      */
