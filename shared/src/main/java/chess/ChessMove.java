@@ -1,6 +1,5 @@
 package chess;
 
-// import lombok.EqualsAndHashCode;
 
 import java.util.Objects;
 
@@ -10,7 +9,6 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-// @EqualsAndHashCode
 public class ChessMove {
     private ChessPosition startPosition;
     private ChessPosition endPosition;

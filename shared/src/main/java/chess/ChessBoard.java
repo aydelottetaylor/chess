@@ -1,6 +1,5 @@
 package chess;
 
-// import lombok.EqualsAndHashCode;
 
 import java.util.Arrays;
 
@@ -10,7 +9,6 @@ import java.util.Arrays;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-// @EqualsAndHashCode
 public class ChessBoard {
     public ChessPiece[][] board = new ChessPiece[9][9];
     

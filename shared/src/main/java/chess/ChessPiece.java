@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.ArrayList;
-// import java.util.lombok
 import java.util.Collection;
 import java.util.Objects;
 
@@ -15,7 +14,6 @@ import java.util.Objects;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
-// @EqualsAndHashCode
 public class ChessPiece {
     public ChessGame.TeamColor pieceColor;
     public ChessPiece.PieceType type;
@@ -151,8 +149,8 @@ public class ChessPiece {
      */
     private void addKnightMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
         int[][] knightMoves = {
-            {-2, -1}, {-2, +1}, // 2 up, 1 left/right
-            {+2, -1}, {+2, +1}, // 2 down, 1 left/right
+            {-2, -1}, {-2, +1}, // 2 down, 1 left/right
+            {+2, -1}, {+2, +1}, // 2 up, 1 left/right
             {-1, -2}, {+1, -2}, // 1 up/down, 2 left
             {-1, +2}, {+1, +2}  // 1 up/down, 2 right
         };
