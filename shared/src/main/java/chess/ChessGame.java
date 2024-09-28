@@ -13,7 +13,8 @@ public class ChessGame {
     private TeamColor teamTurn;
     
     public ChessGame() {
-        
+        this.currentBoard = new ChessBoard();
+        this.teamTurn = ChessGame.TeamColor.WHITE;
     }
 
     @Override
@@ -25,7 +26,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return this.teamTurn;
     }
 
     /**
@@ -63,7 +64,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        currentBoard.makeMove(move, this.teamTurn);
+
+        // Check if is in check
+            // If is in check, check for checkmate and stalemate
     }
 
     /**

@@ -46,6 +46,23 @@ public class ChessBoard {
         this.board[position.getRow()][position.getColumn()] = piece;
     }
 
+    public void removePiece(ChessPosition position) {
+        this.board[position.getRow()][position.getColumn()] = null;
+    }
+
+    public void makeMove(ChessMove move, ChessGame.TeamColor teamTurn) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        ChessPiece pieceMoving = this.getPiece(startPosition);
+        this.removePiece(startPosition);
+        if(move.getPromotionPiece() == null) {
+            this.addPiece(endPosition, pieceMoving);
+        } else {
+            this.addPiece(endPosition, new ChessPiece(teamTurn, move.getPromotionPiece()));
+        }
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
