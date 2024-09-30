@@ -1,6 +1,7 @@
 package chess;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -63,6 +64,40 @@ public class ChessBoard {
         }
     }
 
+    public ArrayList<PiecePositionPair> getBoardPieces() {
+        ArrayList<PiecePositionPair> pieces = new ArrayList<>();
+
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board.length; col++) {
+                ChessPiece piece = board[row][col];
+                if (piece != null) {
+                    ChessPosition position = new ChessPosition(row, col);
+                    pieces.add(new PiecePositionPair(piece, position));
+                }
+            }
+        }
+
+        return pieces;
+    }
+
+    public ArrayList<PiecePositionPair> getBoardPieces(ChessGame.TeamColor teamColor) {
+        ArrayList<PiecePositionPair> pieces = new ArrayList<>();
+
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board.length; col++) {
+                ChessPiece piece = board[row][col];
+                if (piece != null) {
+                    if (piece.getTeamColor() == teamColor) {
+                        ChessPosition position = new ChessPosition(row, col);
+                        pieces.add(new PiecePositionPair(piece, position));
+                    }
+                }
+            }
+        }
+
+        return pieces;
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
@@ -120,3 +155,5 @@ public class ChessBoard {
         addPiece(new ChessPosition(7, 8), new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN));
     }
 }
+
+
