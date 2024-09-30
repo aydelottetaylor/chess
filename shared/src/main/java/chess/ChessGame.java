@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -54,7 +55,28 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = currentBoard.getPiece(startPosition);
+
+        if (piece == null) {
+            return null;
+        }
+
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(this.currentBoard, startPosition);
+
+        Collection<ChessMove> validMoves = new ArrayList<>();
+        for (ChessMove move : possibleMoves) {
+            ChessBoard simulatedBoard = this.currentBoard;
+            try {
+                simulatedBoard.makeMove(move, this.teamTurn);
+                if(!isInCheck(this.teamTurn)) {
+                    validMoves.add(move);
+                }
+            } catch (Exception e) {
+
+            }
+        }
+
+        return validMoves;
     }
 
     /**
@@ -64,10 +86,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        ChessPiece piece = currentBoard.getPiece(move.getStartPosition());
+        if(piece == null || piece.getTeamColor() != this.teamTurn) {
+            throw new InvalidMoveException("Its not this team's turn.");
+        }
+
+        Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        if (!validMoves.contains(move)) {
+            throw new InvalidMoveException("Invalid move!");
+        }
+
         currentBoard.makeMove(move, this.teamTurn);
 
-        // Check if is in check
-            // If is in check, check for checkmate and stalemate
+        this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
     }
 
     /**
@@ -77,7 +108,20 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // ChessPosition kingPosition = currentBoard.getKingPosition(teamColor);
+
+        // for (ChessPiece piece : currentBoard.getPieces()) {
+        //     if (piece.getTeamColor() != teamColor) {
+        //         Collection<ChessMove> opponentMoves = piece.pieceMoves(currentBoard, currentBoard.getPosition(piece));
+        //         for (ChessMove move : opponentMoves) {
+        //             if (move.getEndPosition().equals(kingPosition)) {
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        // }
+
+        return false;
     }
 
     /**
