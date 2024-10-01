@@ -16,6 +16,7 @@ public class ChessGame {
     
     public ChessGame() {
         this.currentBoard = new ChessBoard();
+        this.currentBoard.resetBoard();
         this.teamTurn = ChessGame.TeamColor.WHITE;
     }
 
@@ -83,16 +84,16 @@ public class ChessGame {
         Collection<ChessMove> validMoves = new ArrayList<>();
 
         for (ChessMove move : possibleMoves) {
-            ChessPiece[][] newSimulatedBoard = copyBoard(currentBoard);
-            ChessBoard simulatedBoard = new ChessBoard(newSimulatedBoard);
+            ChessPiece[][] tempBoard = copyBoard(currentBoard);
             try {
-                simulatedBoard.makeMove(move, this.teamTurn);
-                if(!isInCheck(this.teamTurn)) {
+                currentBoard.makeMove(move, piece.getTeamColor());
+                if(!isInCheck(piece.getTeamColor())) {
                     validMoves.add(move);
                 }
             } catch (Exception e) {
                 throw e;
             }
+            currentBoard = new ChessBoard(tempBoard);
         }
 
         return validMoves;
@@ -179,15 +180,15 @@ public class ChessGame {
 
             Collection<ChessMove> validMoves = validMoves(position);
             for (ChessMove move : validMoves) {
-                ChessPiece[][] newSimulatedBoard = copyBoard(currentBoard);
-                ChessBoard simulatedBoard = new ChessBoard(newSimulatedBoard);
+                ChessPiece[][] tempBoard = copyBoard(currentBoard);
                 try {
-                    simulatedBoard.makeMove(move, teamColor);
+                    currentBoard.makeMove(move, teamColor);
                     if (!isInCheck(teamColor)) {
                         return false;
                     }
                 } catch (Exception e) {
                 }
+                currentBoard = new ChessBoard(tempBoard);
             }
         }
         return true;
