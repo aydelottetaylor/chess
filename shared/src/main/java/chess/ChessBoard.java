@@ -16,6 +16,10 @@ public class ChessBoard {
     public ChessBoard() {
     }
 
+    public ChessBoard(ChessPiece[][] board) {
+        this.board = board;
+    }
+
     @Override
     public String toString() {
         return "ChessBoard{" +
@@ -56,9 +60,11 @@ public class ChessBoard {
         ChessPosition endPosition = move.getEndPosition();
 
         ChessPiece pieceMoving = this.getPiece(startPosition);
+        ChessPiece.PieceType type = pieceMoving.getPieceType();
+        ChessPiece pieceAtNewPos = new ChessPiece(teamTurn, type);
         this.removePiece(startPosition);
         if(move.getPromotionPiece() == null) {
-            this.addPiece(endPosition, pieceMoving);
+            this.addPiece(endPosition, pieceAtNewPos);
         } else {
             this.addPiece(endPosition, new ChessPiece(teamTurn, move.getPromotionPiece()));
         }
@@ -85,7 +91,7 @@ public class ChessBoard {
         for (int row = 0; row < board.length; row++) {
             for (int col = 0; col < board.length; col++) {
                 ChessPiece piece = board[row][col];
-                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING) {
                     if (piece.getTeamColor() == teamColor) {
                         return new ChessPosition(row, col);
                     }
@@ -93,7 +99,7 @@ public class ChessBoard {
             }
         }
 
-        throw new IllegalStateException("King not found for team: " + teamColor);
+        return null;
     }
 
     public ArrayList<PiecePositionPair> getBoardPieces(ChessGame.TeamColor teamColor) {
