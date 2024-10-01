@@ -80,6 +80,22 @@ public class ChessBoard {
         return pieces;
     }
 
+    public ChessPosition getKingPosition(ChessGame.TeamColor teamColor) {
+
+        for (int row = 0; row < board.length; row++) {
+            for (int col = 0; col < board.length; col++) {
+                ChessPiece piece = board[row][col];
+                if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                    if (piece.getTeamColor() == teamColor) {
+                        return new ChessPosition(row, col);
+                    }
+                }
+            }
+        }
+
+        throw new IllegalStateException("King not found for team: " + teamColor);
+    }
+
     public ArrayList<PiecePositionPair> getBoardPieces(ChessGame.TeamColor teamColor) {
         ArrayList<PiecePositionPair> pieces = new ArrayList<>();
 
