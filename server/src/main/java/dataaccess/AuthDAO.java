@@ -15,7 +15,7 @@ public class AuthDAO implements AuthDataAccess {
         return auths.get(username);
     }
 
-    public void addAuthToken(String username) throws Exception{
+    public void addAuthToken(String username) throws Exception {
         String authToken = generateAuthToken();
         auths.put(username, new AuthData(username, authToken));
     }
