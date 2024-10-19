@@ -5,11 +5,11 @@ import model.*;
 
 import java.util.Objects;
 
-public class ChessService {
+public class UserService {
     private final UserDataAccess userDataAccess;
     private final AuthDataAccess authDataAccess;
 
-    public ChessService() {
+    public UserService() {
         this.userDataAccess = new UserDAO();
         this.authDataAccess = new AuthDAO();
     }
@@ -26,18 +26,33 @@ public class ChessService {
                 authDataAccess.addAuthToken(newUser.username());
             }
 
-        return authDataAccess.getAuthInfo(newUser.username());
+        return authDataAccess.getAuthInfoByUsername(newUser.username());
     }
 
     public AuthData loginUser(UserData userInfo) throws Exception {
         UserData user = userDataAccess.getUser(userInfo.username());
+        AuthData auth = authDataAccess.getAuthInfoByUsername(userInfo.username());
         if (user == null) {
             throw new ServiceException(401, "Error: unauthorized");
         }
-        if (Objects.equals(user.password(), userInfo.password())) {
+        if (auth != null && Objects.equals(user.password(), userInfo.password())) {
+            return auth;
+        } else if (Objects.equals(user.password(), userInfo.password())) {
             authDataAccess.addAuthToken(userInfo.username());
-            return authDataAccess.getAuthInfo(userInfo.username());
+            return authDataAccess.getAuthInfoByUsername(userInfo.username());
         } else {
+            throw new ServiceException(401, "Error: unauthorized");
+        }
+    }
+
+    public void logoutUser(String authToken) throws Exception {
+        authorizeUser(authToken);
+        authDataAccess.removeAuthorization(authDataAccess.getAuthInfoByToken(authToken));
+    }
+
+    public void authorizeUser(String authToken) throws Exception {
+        AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
+        if (auth == null) {
             throw new ServiceException(401, "Error: unauthorized");
         }
     }

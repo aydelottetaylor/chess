@@ -9,9 +9,9 @@ import model.*;
 import java.util.Map;
 
 public class Server {
-    private final UserDataAccess userDataAccess = new UserDAO();
     private final Gson serializer = new Gson();
-    private final ChessService userService = new ChessService();
+    private final UserService userService = new UserService();
+    private final GameService gameService = new GameService(userService);
 
     public Server() {
     }
@@ -80,16 +80,22 @@ public class Server {
         return serializer.toJson(result);
     }
 
-    private Object closeSession(Request req, Response res) {
+    private Object closeSession(Request req, Response res) throws Exception {
+        var authToken = req.headers("Authorization");
+//        userService.logoutUser(authToken);
+        return serializer.toJson(null);
+    }
+
+    private Object getGame(Request req, Response res) throws Exception {
         return "";
     }
 
-    private Object getGame(Request req, Response res) {
-        return "";
-    }
-
-    private Object createGame(Request req, Response res) {
-        return "";
+    private Object createGame(Request req, Response res) throws Exception {
+        var authToken = req.headers("authorization");
+        var gameInfo = serializer.fromJson(req.body(), GameData.class);
+        var result = gameService.createGame(gameInfo, authToken);
+        Map<String, Integer> response = Map.of("gameID", result.getGameId());
+        return serializer.toJson(response);
     }
 
     private Object joinGame(Request req, Response res) {
