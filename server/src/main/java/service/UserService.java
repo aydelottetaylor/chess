@@ -62,4 +62,9 @@ public class UserService {
         authDataAccess.clearAuths();
     }
 
+    public UserData getUserOnAuthToken(String authToken) throws Exception {
+        AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
+        return userDataAccess.getUser(auth.username());
+    }
+
 }

@@ -87,19 +87,24 @@ public class Server {
     }
 
     private Object getGames(Request req, Response res) throws Exception {
-        return "";
-    }
-
-    private Object createGame(Request req, Response res) throws Exception {
-        var authToken = req.headers("authorization");
-        var gameInfo = serializer.fromJson(req.body(), GameData.class);
-        var result = gameService.createGame(gameInfo, authToken);
-        Map<String, Integer> response = Map.of("gameID", result.getGameId());
+        var authToken = req.headers("Authorization");
+        var response = gameService.getAllGames(authToken);
         return serializer.toJson(response);
     }
 
-    private Object joinGame(Request req, Response res) {
-        return "";
+    private Object createGame(Request req, Response res) throws Exception {
+        var authToken = req.headers("Authorization");
+        var gameInfo = serializer.fromJson(req.body(), GameData.class);
+        var result = gameService.createGame(gameInfo, authToken);
+        Map<String, Integer> response = Map.of("gameID", result.gameID());
+        return serializer.toJson(response);
+    }
+
+    private Object joinGame(Request req, Response res) throws Exception {
+        var authToken = req.headers("Authorization");
+        var reqInfo = serializer.fromJson(req.body(), JoinGameData.class);
+        gameService.joinGame(authToken, reqInfo);
+        return serializer.toJson(null);
     }
 
     private Object deleteDatabase(Request req, Response res) throws Exception {

@@ -23,7 +23,6 @@ public class AuthDAO implements AuthDataAccess {
     }
 
     public AuthData getAuthInfoByToken(String authToken) {
-        System.out.println(authsByToken);
         return authsByToken.get(authToken);
     }
 
