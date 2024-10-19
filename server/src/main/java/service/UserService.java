@@ -35,9 +35,7 @@ public class UserService {
         if (user == null) {
             throw new ServiceException(401, "Error: unauthorized");
         }
-        if (auth != null && Objects.equals(user.password(), userInfo.password())) {
-            return auth;
-        } else if (Objects.equals(user.password(), userInfo.password())) {
+        if (Objects.equals(user.password(), userInfo.password())) {
             authDataAccess.addAuthToken(userInfo.username());
             return authDataAccess.getAuthInfoByUsername(userInfo.username());
         } else {

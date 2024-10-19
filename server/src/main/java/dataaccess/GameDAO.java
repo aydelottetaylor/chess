@@ -29,7 +29,7 @@ public class GameDAO implements GameDataAccess {
     public Map<String, List<Map<String, Object>>> getAllGames() {
         List<Map<String, Object>> gameList = games.values().stream().map( game -> {
             Map<String, Object> gameMap = new HashMap<>();
-            gameMap.put("gameId", game.gameID());
+            gameMap.put("gameID", game.gameID());
             gameMap.put("whiteUsername", game.whiteUsername() != null ? game.whiteUsername() : null);
             gameMap.put("blackUsername", game.blackUsername() != null ? game.blackUsername() : null);
             gameMap.put("gameName", game.gameName());
