@@ -16,4 +16,9 @@ public class GameService {
         userService.authorizeUser(authToken);
         return gameDataAccess.createNewGame(gameInfo.gameName());
     }
+
+    public void clearDatabase() throws Exception {
+        userService.clearUsersAndAuths();
+        gameDataAccess.clearGames();
+    }
 }

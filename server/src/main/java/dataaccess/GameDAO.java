@@ -17,5 +17,9 @@ public class GameDAO implements GameDataAccess {
         return games.get(gameId);
     }
 
+    public void clearGames() {
+        games.clear();
+    }
+
 
 }

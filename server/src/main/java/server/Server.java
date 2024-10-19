@@ -25,7 +25,7 @@ public class Server {
         Spark.post("/user", this::registerUser);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::closeSession);
-        Spark.get("/game", this:: getGame);
+        Spark.get("/game", this:: getGames);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
         Spark.delete("/db", this::deleteDatabase);
@@ -82,11 +82,11 @@ public class Server {
 
     private Object closeSession(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
-//        userService.logoutUser(authToken);
+        userService.logoutUser(authToken);
         return serializer.toJson(null);
     }
 
-    private Object getGame(Request req, Response res) throws Exception {
+    private Object getGames(Request req, Response res) throws Exception {
         return "";
     }
 
@@ -102,7 +102,8 @@ public class Server {
         return "";
     }
 
-    private Object deleteDatabase(Request req, Response res) {
-        return "";
+    private Object deleteDatabase(Request req, Response res) throws Exception {
+        gameService.clearDatabase();
+        return serializer.toJson(null);
     }
 }

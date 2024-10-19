@@ -142,7 +142,7 @@ public class StandardAPITests {
     public void successLogout() {
         //log out existing user
         TestResult result = serverFacade.logout(existingAuth);
-        
+
         assertHttpOk(result);
     }
 

@@ -16,11 +16,11 @@ public class UserService {
 
     public AuthData registerUser(UserData newUser) throws Exception {
             if(newUser.username() == null || newUser.password() == null || newUser.email() == null) {
-                throw new ServiceException(400, "Error: Bad request");
+                throw new ServiceException(400, "Error: bad request");
             }
 
             if (userDataAccess.getUser(newUser.username()) != null) {
-                throw new ServiceException(403, "Error: Forbidden");
+                throw new ServiceException(403, "Error: already taken");
             } else {
                 userDataAccess.addUser(newUser);
                 authDataAccess.addAuthToken(newUser.username());
@@ -55,6 +55,11 @@ public class UserService {
         if (auth == null) {
             throw new ServiceException(401, "Error: unauthorized");
         }
+    }
+
+    public void clearUsersAndAuths() throws Exception {
+        userDataAccess.clearUsers();
+        authDataAccess.clearAuths();
     }
 
 }

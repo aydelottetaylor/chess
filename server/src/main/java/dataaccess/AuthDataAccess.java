@@ -7,5 +7,6 @@ public interface AuthDataAccess {
     void addAuthToken(String username) throws Exception;
     AuthData getAuthInfoByToken(String token);
     void removeAuthorization(AuthData authData) throws Exception;
+    void clearAuths();
 
 }

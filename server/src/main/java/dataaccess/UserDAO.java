@@ -28,7 +28,7 @@ public class UserDAO implements UserDataAccess {
     }
 
     // Clear HashMap of users
-    public void deleteAllUsers() {
+    public void clearUsers() {
         users.clear();
     }
 

@@ -44,4 +44,9 @@ public class AuthDAO implements AuthDataAccess {
         return sb.toString();
     }
 
+    public void clearAuths() {
+        authsByUsername.clear();
+        authsByToken.clear();
+    }
+
 }
