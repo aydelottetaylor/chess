@@ -9,15 +9,12 @@ import java.util.Random;
 public class AuthDAO implements AuthDataAccess {
     final private HashMap<String, AuthData> authsByUsername = new HashMap<>();
     final private HashMap<String, AuthData> authsByToken = new HashMap<>();
-    final private static String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    final private static int AUTHLENGTH = 20;
 
     public AuthData getAuthInfoByUsername(String username) {
         return authsByUsername.get(username);
     }
 
-    public void addAuthToken(String username) throws Exception {
-        String authToken = generateAuthToken();
+    public void addAuthToken(String username, String authToken) throws Exception {
         authsByUsername.put(username, new AuthData(username, authToken));
         authsByToken.put(authToken, new AuthData(username, authToken));
     }
@@ -31,21 +28,13 @@ public class AuthDAO implements AuthDataAccess {
         authsByToken.remove(authData.authToken());
     }
 
-    private String generateAuthToken() throws DataAccessException {
-        Random random = new Random();
-        StringBuilder sb = new StringBuilder(AUTHLENGTH);
-
-        for (int i = 0; i < AUTHLENGTH; i++) {
-            int index = random.nextInt(CHARACTERS.length());
-            sb.append(CHARACTERS.charAt(index));
-        }
-
-        return sb.toString();
-    }
-
     public void clearAuths() {
         authsByUsername.clear();
         authsByToken.clear();
+    }
+
+    public Collection<AuthData> getAllAuths() {
+        return authsByUsername.values();
     }
 
 }
