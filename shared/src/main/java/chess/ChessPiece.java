@@ -101,10 +101,10 @@ public class ChessPiece {
      * @param moves The collection of possible moves for this piece
      */
     private void addBishopMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
-        addDiagonalMoves(board, myPosition, moves, -1, -1);
-        addDiagonalMoves(board, myPosition, moves, 1, -1);
-        addDiagonalMoves(board, myPosition, moves, -1, 1);
-        addDiagonalMoves(board, myPosition, moves, 1, 1);
+        addMoves(board, myPosition, moves, -1, -1);
+        addMoves(board, myPosition, moves, 1, -1);
+        addMoves(board, myPosition, moves, -1, 1);
+        addMoves(board, myPosition, moves, 1, 1);
     }
 
     /**
@@ -116,10 +116,10 @@ public class ChessPiece {
      * @param moves The collection of possible moves for this piece
      */
     private void addRookMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
-        addStraightMoves(board, myPosition, moves, 0, -1);
-        addStraightMoves(board, myPosition, moves, 0, 1);
-        addStraightMoves(board, myPosition, moves, -1, 0);
-        addStraightMoves(board, myPosition, moves, 1, 0);
+        addMoves(board, myPosition, moves, 0, -1);
+        addMoves(board, myPosition, moves, 0, 1);
+        addMoves(board, myPosition, moves, -1, 0);
+        addMoves(board, myPosition, moves, 1, 0);
     }
 
     /**
@@ -235,41 +235,6 @@ public class ChessPiece {
     }
 
     /**
-     * Helps calculate all of the diagonal moves in a specific direction for bishops and queens
-     * 
-     * @param board The chess board we are working with
-     * @param myPosition The current position of piece
-     * @param moves The collection of possible moves for this piece
-     * @param rowIncrement The increment with which we are moving the column value to find a new move
-     * @param colIncrement The increment with which we are moving the column value to find a new move
-     */
-    private void addDiagonalMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowIncrement, int colIncrement) {
-        int currentRow = myPosition.getRow();
-        int currentCol = myPosition.getColumn();
-
-        while(true) {
-            currentRow += rowIncrement;
-            currentCol += colIncrement;
-
-            if(!isValidPosition(currentRow, currentCol)) {
-                break;
-            }
-
-            ChessPosition newPosition = new ChessPosition(currentRow, currentCol);
-            ChessPiece pieceAtNewPos = board.getPiece(newPosition);
-
-            if(pieceAtNewPos == null) {
-                moves.add(new ChessMove(myPosition, newPosition, null));
-            } else if (pieceAtNewPos.getTeamColor() != this.pieceColor) {
-                moves.add(new ChessMove(myPosition, newPosition, null));
-                break;
-            } else {
-                break;
-            }
-        }
-    }
-
-    /**
      * Helps calculate all of the straight moves in a specific direction for rooks and queens.
      * 
      * @param board The chess board we are working with
@@ -278,7 +243,7 @@ public class ChessPiece {
      * @param rowIncrement The increment with which we are moving the column value to find a new move
      * @param colIncrement The increment with which we are moving the column value to find a new move
      */
-    private void addStraightMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowIncrement, int colIncrement) {
+    private void addMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int rowIncrement, int colIncrement) {
         int currentRow = myPosition.getRow();
         int currentCol = myPosition.getColumn();
 

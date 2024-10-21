@@ -134,26 +134,7 @@ public class GameServiceTests {
         UserData newUser = new UserData("username", "password", "email@email.com");
         AuthData auth = userService.registerUser(newUser);
 
-        GameData newGame = new GameData(0, null, null, "newGame", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame1", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame2", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame3", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame4", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1002));
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1003));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1004));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1005));
+        setupGames(auth);
 
         List<Map<String, Object>> games = gameService.getAllGames(auth.authToken()).get("games");
 
@@ -211,26 +192,7 @@ public class GameServiceTests {
         newUser = new UserData("username2", "password", "email@email.com");
         AuthData auth2 = userService.registerUser(newUser);
 
-        GameData newGame = new GameData(0, null, null, "newGame", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame1", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame2", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame3", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        newGame = new GameData(0, null, null, "newGame4", new ChessGame());
-        gameService.createGame(newGame, auth.authToken());
-
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1002));
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1003));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1004));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1005));
+        setupGames(auth);
         gameService.joinGame(auth2.authToken(), new JoinGameData("BLACK", 1001));
         gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1004));
         gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1005));
@@ -356,6 +318,29 @@ public class GameServiceTests {
         } catch (Exception e) {
             throw new ServiceException(500, e.getMessage());
         }
+    }
+
+    private void setupGames(AuthData auth) throws Exception {
+        GameData newGame = new GameData(0, null, null, "newGame", new ChessGame());
+        gameService.createGame(newGame, auth.authToken());
+
+        newGame = new GameData(0, null, null, "newGame1", new ChessGame());
+        gameService.createGame(newGame, auth.authToken());
+
+        newGame = new GameData(0, null, null, "newGame2", new ChessGame());
+        gameService.createGame(newGame, auth.authToken());
+
+        newGame = new GameData(0, null, null, "newGame3", new ChessGame());
+        gameService.createGame(newGame, auth.authToken());
+
+        newGame = new GameData(0, null, null, "newGame4", new ChessGame());
+        gameService.createGame(newGame, auth.authToken());
+
+        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1002));
+        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1003));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1004));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1005));
     }
 
 }
