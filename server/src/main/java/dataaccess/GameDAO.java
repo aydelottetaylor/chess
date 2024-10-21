@@ -19,11 +19,6 @@ public class GameDAO implements GameDataAccess {
         return games.get(gameId);
     }
 
-    // Takes gameID and returns game data associated with that gameID
-    public GameData getGame(int gameId) {
-        return games.get(gameId);
-    }
-
     // Clears all game data from stored data
     public void clearGames() {
         games.clear();

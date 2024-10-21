@@ -22,11 +22,6 @@ public class UserDAO implements UserDataAccess {
         users.put(user.username(), user);
     }
 
-    // Delete a user from the HashMap
-    public void removeUser(String username) {
-        users.remove(username);
-    }
-
     // Clear HashMap of users
     public void clearUsers() {
         users.clear();
