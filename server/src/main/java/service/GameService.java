@@ -18,13 +18,20 @@ public class GameService {
     }
 
     public GameData createGame(GameData gameInfo, String authToken) throws Exception {
+        if(gameInfo.gameName() == null || gameInfo.gameName().isEmpty()) {
+            throw new ServiceException(500, "Error: game name is null or empty, must give a game name");
+        }
         userService.authorizeUser(authToken);
         return gameDataAccess.createNewGame(gameInfo.gameName());
     }
 
     public void clearDatabase() throws Exception {
-        userService.clearUsersAndAuths();
-        gameDataAccess.clearGames();
+        try {
+            userService.clearUsersAndAuths();
+            gameDataAccess.clearGames();
+        } catch (Exception e) {
+            throw new ServiceException(500, "Error: error thrown in clear database");
+        }
     }
 
     public Map<String, List<Map<String, Object>>> getAllGames(String authToken) throws Exception {
@@ -40,4 +47,10 @@ public class GameService {
         UserData user = userService.getUserOnAuthToken(authToken);
         gameDataAccess.addUserToGame(user.username(), gameData);
     }
+
+    // ------ HELPER FUNCTIONS FOR SERVICE TESTS ------ //
+    public GameDataAccess getGameDataAccess() {
+        return gameDataAccess;
+    }
+
 }

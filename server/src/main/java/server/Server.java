@@ -41,7 +41,6 @@ public class Server {
 
         Spark.before((req, res) -> res.type("application/json"));
 
-        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();
 
         Spark.awaitInitialization();
@@ -63,7 +62,7 @@ public class Server {
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
     }
 
-     private void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
+    private void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
          res.status(ex.StatusCode());
          res.body(serializer.toJson(Map.of("message", ex.getMessage())));
      }

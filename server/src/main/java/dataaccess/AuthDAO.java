@@ -4,7 +4,6 @@ import model.AuthData;
 
 import java.util.HashMap;
 import java.util.Collection;
-import java.util.Random;
 
 public class AuthDAO implements AuthDataAccess {
     final private HashMap<String, AuthData> authsByUsername = new HashMap<>();

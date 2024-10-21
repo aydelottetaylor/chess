@@ -2,8 +2,6 @@ package service;
 
 import dataaccess.*;
 import model.*;
-
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Random;
 
@@ -63,7 +61,7 @@ public class UserService {
         authDataAccess.clearAuths();
     }
 
-    private String generateAuthToken() throws DataAccessException {
+    private String generateAuthToken() throws Exception {
         Random random = new Random();
         StringBuilder sb = new StringBuilder(AUTHLENGTH);
 
@@ -76,24 +74,35 @@ public class UserService {
     }
 
     public UserData getUserOnAuthToken(String authToken) throws Exception {
+        if (authToken == null) {
+            throw new ServiceException(500, "Error: AuthToken passed into getUserOnAuthToken is null");
+        }
         AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
         return userDataAccess.getUser(auth.username());
     }
 
-    public UserData getUserOnUserName(String username) {
+    public UserData getUserOnUserName(String username) throws Exception {
+        if (username == null) {
+            throw new ServiceException(500, "Error: Username passed into getUserOnUserName is null");
+        }
         return userDataAccess.getUser(username);
     }
 
-    public AuthData getAuthInfoByUsername(String username) {
+    public AuthData getAuthInfoByUsername(String username) throws Exception {
+        if (username == null) {
+            throw new ServiceException(500, "Error: Username passed to getAuthInfoByUsername is null");
+        }
         return authDataAccess.getAuthInfoByUsername(username);
     }
 
-    public Collection<UserData> getAllUsers() {
-        return userDataAccess.listUsers();
+
+    // ------ HELPER FUNCTIONS FOR SERVICE TESTS ------ //
+    public UserDataAccess getUserDataAccess() {
+        return userDataAccess;
     }
 
-    public Collection<AuthData> getAllAuths() {
-        return authDataAccess.getAllAuths();
+    public AuthDataAccess getAuthDataAccess() {
+        return authDataAccess;
     }
 
 }
