@@ -151,19 +151,7 @@ public class ChessPiece {
             {-1, +2}, {+1, +2}  // 1 up/down, 2 right
         };
 
-        for (int[] move : knightMoves) {
-            int newRow = myPosition.getRow() + move[0];
-            int newCol = myPosition.getColumn() + move[1];
-
-            if (isValidPosition(newRow, newCol)) {
-                ChessPosition newPosition = new ChessPosition(newRow, newCol);
-                ChessPiece pieceAtNewPos = board.getPiece(newPosition);
-
-                if (pieceAtNewPos == null || pieceAtNewPos.getTeamColor() != this.pieceColor) {
-                    moves.add(new ChessMove(myPosition, newPosition, null));
-                }
-            }
-        }
+        addMovesOfKingOrKnight(knightMoves, board, myPosition, moves);
     }
 
     /**
@@ -183,7 +171,21 @@ public class ChessPiece {
             {1, -1}, {1, 1}
         };
 
-        for (int[] move : kingMoves) {
+        addMovesOfKingOrKnight(kingMoves, board, myPosition, moves);
+    }
+
+    /**
+     * Helps calculate all of the possible moves for a king or a knight at a specific position.  
+     *
+     * NOTE: This function does not include logic to figure out if the king is in check or checkmate. 
+     * 
+     * @param pieceMoves The moves that either a king or a knight could possibly make from any given position
+     * @param board The chess board we are working with
+     * @param myPosition The current position of piece
+     * @param moves The collection of possible moves for this piece
+     */
+    private void addMovesOfKingOrKnight(int[][] pieceMoves, ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves) {
+        for (int[] move : pieceMoves) {
             int newRow = myPosition.getRow() + move[0];
             int newCol = myPosition.getColumn() + move[1];
 
