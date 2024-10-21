@@ -55,7 +55,7 @@ public class GameServiceTests {
 
     @Nested
     @DisplayName("Create Game Failures")
-    class testCreateGameFailure {
+    class TestCreateGameFailure {
 
         @Test
         @DisplayName("Not Authorized")
@@ -64,7 +64,7 @@ public class GameServiceTests {
             ServiceException exception = assertThrows(ServiceException.class, () -> {
                gameService.createGame(newGame, null);
             });
-            assertEquals(401, exception.StatusCode());
+            assertEquals(401, exception.statusCode());
             assertEquals("Error: unauthorized", exception.getMessage());
         }
 
@@ -78,7 +78,7 @@ public class GameServiceTests {
             ServiceException exception = assertThrows(ServiceException.class, () -> {
                 gameService.createGame(newGame, auth.authToken());
             });
-            assertEquals(500, exception.StatusCode());
+            assertEquals(500, exception.statusCode());
             assertEquals("Error: game name is null or empty, must give a game name", exception.getMessage());
         }
 
@@ -92,7 +92,7 @@ public class GameServiceTests {
             ServiceException exception = assertThrows(ServiceException.class, () -> {
                 gameService.createGame(newGame, auth.authToken());
             });
-            assertEquals(500, exception.StatusCode());
+            assertEquals(500, exception.statusCode());
             assertEquals("Error: game name is null or empty, must give a game name", exception.getMessage());
         }
     }
@@ -199,7 +199,7 @@ public class GameServiceTests {
             gameService.getAllGames("fakeauthtoken");
         });
 
-        assertEquals(401, exception.StatusCode());
+        assertEquals(401, exception.statusCode());
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
@@ -281,7 +281,7 @@ public class GameServiceTests {
                 gameService.joinGame("badauthtoken", new JoinGameData("WHITE", 1001));
             });
 
-            assertEquals(401, exception.StatusCode());
+            assertEquals(401, exception.statusCode());
             assertEquals("Error: unauthorized", exception.getMessage());
         }
 
@@ -297,7 +297,7 @@ public class GameServiceTests {
                 gameService.joinGame(auth.authToken(), new JoinGameData("RANDOMCOLOR", 1001));
             });
 
-            assertEquals(400, exception.StatusCode());
+            assertEquals(400, exception.statusCode());
             assertEquals("Error: bad request", exception.getMessage());
         }
 
@@ -311,7 +311,7 @@ public class GameServiceTests {
                 gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
             });
 
-            assertEquals(400, exception.StatusCode());
+            assertEquals(400, exception.statusCode());
             assertEquals("Error: bad request", exception.getMessage());
         }
 
@@ -331,7 +331,7 @@ public class GameServiceTests {
                 gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1001));
             });
 
-            assertEquals(403, exception.StatusCode());
+            assertEquals(403, exception.statusCode());
             assertEquals("Error: already taken", exception.getMessage());
         }
 

@@ -54,19 +54,19 @@ public class Server {
 
     // Handles Server Exceptions
     private void serverException(ServerException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.statusCode());
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
     }
 
     // Handles Data Access Exceptions
     private void dataAccessExceptionHandler(DataAccessException ex, Request req, Response res) {
-        res.status(ex.StatusCode());
+        res.status(ex.statusCode());
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
     }
 
     // Handles Service Exceptions
     private void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
-         res.status(ex.StatusCode());
+         res.status(ex.statusCode());
          res.body(serializer.toJson(Map.of("message", ex.getMessage())));
      }
 

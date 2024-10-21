@@ -38,7 +38,7 @@ public class UserServiceTests {
 
     @Nested
     @DisplayName("Register User Failure")
-    class testRegisterUserBadRequest {
+    class TestRegisterUserBadRequest {
 
         @Test
         @DisplayName("No Username")
@@ -50,7 +50,7 @@ public class UserServiceTests {
             Collection<UserData> users = getAllUsers();
             Collection<AuthData> auths = getAllAuths();
 
-            assertEquals(400, exception.StatusCode());
+            assertEquals(400, exception.statusCode());
             assertEquals("Error: bad request", exception.getMessage());
             assertTrue(users.isEmpty());
             assertTrue(auths.isEmpty());
@@ -66,7 +66,7 @@ public class UserServiceTests {
             Collection<UserData> users = getAllUsers();
             Collection<AuthData> auths = getAllAuths();
 
-            assertEquals(400, exception.StatusCode());
+            assertEquals(400, exception.statusCode());
             assertEquals("Error: bad request", exception.getMessage());
             assertTrue(users.isEmpty());
             assertTrue(auths.isEmpty());
@@ -82,7 +82,7 @@ public class UserServiceTests {
             Collection<UserData> users = getAllUsers();
             Collection<AuthData> auths = getAllAuths();
 
-            assertEquals(400, exception.StatusCode());
+            assertEquals(400, exception.statusCode());
             assertEquals("Error: bad request", exception.getMessage());
             assertTrue(users.isEmpty());
             assertTrue(auths.isEmpty());
@@ -115,7 +115,7 @@ public class UserServiceTests {
 
     @Nested
     @DisplayName("Login User Failure")
-    class testLoginFailure {
+    class TestLoginFailure {
 
         @Test
         @DisplayName("No Matching User Info")
@@ -126,7 +126,7 @@ public class UserServiceTests {
             });
             Collection<AuthData> auths = getAllAuths();
 
-            assertEquals(401, exception.StatusCode());
+            assertEquals(401, exception.statusCode());
             assertEquals("Error: unauthorized, no matching user registered", exception.getMessage());
             assertTrue(auths.isEmpty());
         }
@@ -143,7 +143,7 @@ public class UserServiceTests {
             });
             Collection<AuthData> auths = getAllAuths();
 
-            assertEquals(401, exception.StatusCode());
+            assertEquals(401, exception.statusCode());
             assertEquals("Error: unauthorized, wrong password", exception.getMessage());
             assertTrue(auths.isEmpty());
         }
@@ -172,7 +172,7 @@ public class UserServiceTests {
             userService.logoutUser(badAuth.authToken());
         });
 
-        assertEquals(401, exception.StatusCode());
+        assertEquals(401, exception.statusCode());
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
@@ -194,7 +194,7 @@ public class UserServiceTests {
             userService.authorizeUser(authToken);
         });
 
-        assertEquals(401, exception.StatusCode());
+        assertEquals(401, exception.statusCode());
         assertEquals("Error: unauthorized", exception.getMessage());
     }
 
@@ -249,7 +249,7 @@ public class UserServiceTests {
         ServiceException exception = assertThrows(ServiceException.class, () -> {
             userService.getUserOnAuthToken(null);
         });
-        assertEquals(500, exception.StatusCode());
+        assertEquals(500, exception.statusCode());
         assertEquals("Error: AuthToken passed into getUserOnAuthToken is null", exception.getMessage());
     }
 
@@ -276,7 +276,7 @@ public class UserServiceTests {
         ServiceException exception = assertThrows(ServiceException.class, () -> {
             userService.getUserOnUserName(null);
         });
-        assertEquals(500, exception.StatusCode());
+        assertEquals(500, exception.statusCode());
         assertEquals("Error: Username passed into getUserOnUserName is null", exception.getMessage());
     }
 
@@ -295,7 +295,7 @@ public class UserServiceTests {
             userService.getAuthInfoByUsername(null);
         });
 
-        assertEquals(500, exception.StatusCode());
+        assertEquals(500, exception.statusCode());
         assertEquals("Error: Username passed to getAuthInfoByUsername is null", exception.getMessage());
     }
 
