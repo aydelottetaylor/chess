@@ -52,45 +52,53 @@ public class Server {
         Spark.awaitStop();
     }
 
+    // Handles Server Exceptions
     private void serverException(ServerException ex, Request req, Response res) {
         res.status(ex.StatusCode());
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
     }
 
+    // Handles Data Access Exceptions
     private void dataAccessExceptionHandler(DataAccessException ex, Request req, Response res) {
         res.status(ex.StatusCode());
         res.body(serializer.toJson(Map.of("message", ex.getMessage())));
     }
 
+    // Handles Service Exceptions
     private void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
          res.status(ex.StatusCode());
          res.body(serializer.toJson(Map.of("message", ex.getMessage())));
      }
 
+    // Register a new user, does not require authentication, requires username, password, and email
     private Object registerUser(Request req, Response res) throws Exception {
         var newUser = serializer.fromJson(req.body(), UserData.class);
         var result = userService.registerUser(newUser);
         return serializer.toJson(result);
     }
 
+    // Login existing user, does not require authentication, requires username and password
     private Object login(Request req, Response res) throws Exception{
         var userInfo = serializer.fromJson(req.body(), UserData.class);
         var result = userService.loginUser(userInfo);
         return serializer.toJson(result);
     }
 
+    // Logout currently logged in user, requires authentication
     private Object closeSession(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
         userService.logoutUser(authToken);
         return serializer.toJson(null);
     }
 
+    // Get all existing games and their information, requires authentication
     private Object getGames(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
         var response = gameService.getAllGames(authToken);
         return serializer.toJson(response);
     }
 
+    // Create a new game, requires authentication and game name
     private Object createGame(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
         var gameInfo = serializer.fromJson(req.body(), GameData.class);
@@ -99,6 +107,7 @@ public class Server {
         return serializer.toJson(response);
     }
 
+    // Join an existing game, requires authentication and gameID
     private Object joinGame(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
         var reqInfo = serializer.fromJson(req.body(), JoinGameData.class);
@@ -106,6 +115,7 @@ public class Server {
         return serializer.toJson(null);
     }
 
+    // Delete all existing user, authorization, and game data, does not require authentication
     private Object deleteDatabase(Request req, Response res) throws Exception {
         gameService.clearDatabase();
         return serializer.toJson(null);

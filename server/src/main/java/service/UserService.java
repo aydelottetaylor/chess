@@ -16,6 +16,8 @@ public class UserService {
         this.authDataAccess = new AuthDAO();
     }
 
+    // Checks passed data to make user all data exists, checks that username 
+    // doesn't already exist, adds user information to stored users
     public AuthData registerUser(UserData newUser) throws Exception {
             if(newUser.username() == null || newUser.password() == null || newUser.email() == null) {
                 throw new ServiceException(400, "Error: bad request");
@@ -31,6 +33,8 @@ public class UserService {
         return authDataAccess.getAuthInfoByUsername(newUser.username());
     }
 
+    // Takes user username and password, checks password given with password stored for user
+    // if password is correct calls to get authToken and adds authData to stored data
     public AuthData loginUser(UserData userInfo) throws Exception {
         UserData user = userDataAccess.getUser(userInfo.username());
         if (user == null) {
@@ -44,11 +48,13 @@ public class UserService {
         }
     }
 
+    // Checks user authorization, removes authData from stored data to logout
     public void logoutUser(String authToken) throws Exception {
         authorizeUser(authToken);
         authDataAccess.removeAuthorization(authDataAccess.getAuthInfoByToken(authToken));
     }
 
+    // Checks that authToken given matches existing auth token, if doesn't match throws exception
     public void authorizeUser(String authToken) throws Exception {
         AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
         if (auth == null) {
@@ -56,11 +62,13 @@ public class UserService {
         }
     }
 
+    // Clears all user and authorization data from stored data
     public void clearUsersAndAuths() throws Exception {
         userDataAccess.clearUsers();
         authDataAccess.clearAuths();
     }
 
+    // Generates and returns 20 character alphanumeric authToken
     private String generateAuthToken() throws Exception {
         Random random = new Random();
         StringBuilder sb = new StringBuilder(AUTHLENGTH);
@@ -73,6 +81,7 @@ public class UserService {
         return sb.toString();
     }
 
+    // Takes authToken and returns userData associated with that authToken
     public UserData getUserOnAuthToken(String authToken) throws Exception {
         if (authToken == null) {
             throw new ServiceException(500, "Error: AuthToken passed into getUserOnAuthToken is null");
@@ -81,6 +90,7 @@ public class UserService {
         return userDataAccess.getUser(auth.username());
     }
 
+    // Takes username and returns user data associated with that username
     public UserData getUserOnUserName(String username) throws Exception {
         if (username == null) {
             throw new ServiceException(500, "Error: Username passed into getUserOnUserName is null");
@@ -88,6 +98,7 @@ public class UserService {
         return userDataAccess.getUser(username);
     }
 
+    // Takes username and returns authorization data associated with that username
     public AuthData getAuthInfoByUsername(String username) throws Exception {
         if (username == null) {
             throw new ServiceException(500, "Error: Username passed to getAuthInfoByUsername is null");

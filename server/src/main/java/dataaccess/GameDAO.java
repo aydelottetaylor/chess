@@ -12,20 +12,24 @@ import java.util.Objects;
 public class GameDAO implements GameDataAccess {
     private final HashMap<Integer, GameData> games = new HashMap<>();
 
+    // Takes a gameName and generates new game data, stores in stored data and then returns game data
     public GameData createNewGame(String gameName) throws Exception {
         int gameId = 1001 + games.size();
         games.put(gameId, new GameData(gameId, null, null, gameName, new ChessGame()));
         return games.get(gameId);
     }
 
+    // Takes gameID and returns game data associated with that gameID
     public GameData getGame(int gameId) {
         return games.get(gameId);
     }
 
+    // Clears all game data from stored data
     public void clearGames() {
         games.clear();
     }
 
+    // Returns all game data 
     public Map<String, List<Map<String, Object>>> getAllGames() {
         List<Map<String, Object>> gameList = games.values().stream().map( game -> {
             Map<String, Object> gameMap = new HashMap<>();
@@ -39,6 +43,7 @@ public class GameDAO implements GameDataAccess {
         return Map.of("games", gameList);
     }
 
+    // Takes a username and JoinGameData, checks to see if color has been taken for specific game, if it hasn't adds user to game as color
     public void addUserToGame(String username, JoinGameData gameData) throws Exception {
         GameData originalGame = games.get(gameData.gameID());
         if (originalGame != null) {
