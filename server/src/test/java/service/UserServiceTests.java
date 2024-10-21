@@ -1,4 +1,4 @@
-package servicetests;
+package service;
 
 import model.*;
 import service.*;
