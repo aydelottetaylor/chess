@@ -12,7 +12,7 @@ public class UserService {
     final private static int AUTHLENGTH = 20;
 
     public UserService() {
-        this.userDataAccess = new UserDAO();
+        this.userDataAccess = new UserDAOMemory();
         this.authDataAccess = new AuthDAO();
     }
 

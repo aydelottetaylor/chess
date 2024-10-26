@@ -1,30 +1,33 @@
 package dataaccess;
 
 import model.UserData;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collection;
+import java.sql.*;
 
-public class UserDAO implements UserDataAccess {
-    final private HashMap<String, UserData> users = new HashMap<>();
+public class MySQL_UserDAO implements UserDataAccess {
 
-    // Get a user from HashMap
     public UserData getUser(String username) {
-        return users.get(username);
+        return new UserData("", "", "");
     }
 
     // List all users
     public Collection<UserData> listUsers() {
-        return users.values();
+        return new ArrayList<UserData>();
     }
 
     // Add user or update user to HashMap
     public void addUser(UserData user) {
-        users.put(user.username(), user);
+
     }
 
     // Clear HashMap of users
     public void clearUsers() {
-        users.clear();
+
     }
+
+
 
 }
