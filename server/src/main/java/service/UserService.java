@@ -52,7 +52,7 @@ public class UserService {
     // Checks user authorization, removes authData from stored data to logout
     public void logoutUser(String authToken) throws Exception {
         authorizeUser(authToken);
-        authDataAccess.removeAuthorization(authDataAccess.getAuthInfoByToken(authToken));
+        authDataAccess.removeAuthorization(authToken);
     }
 
     // Checks that authToken given matches existing auth token, if doesn't match throws exception

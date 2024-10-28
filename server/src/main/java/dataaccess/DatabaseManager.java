@@ -76,7 +76,7 @@ public class DatabaseManager {
                 `password` varchar(256) NOT NULL,
                 `email` varchar(256) NOT NULL,
                 PRIMARY KEY (`userid`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 AUTO_INCREMENT = 1000 COLLATE=utf8mb4_0900_ai_ci
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """,
             """
             CREATE TABLE IF NOT EXISTS auths (
@@ -87,11 +87,11 @@ public class DatabaseManager {
             """,
             """
             CREATE TABLE IF NOT EXISTS games (
-                `gameid` int NOT NULL,
+                `gameid` int NOT NULL AUTO_INCREMENT,
                 `whiteusername` varchar(256),
                 `blackusername` varchar(256),
                 `gamename` varchar(256) NOT NULL,
-                `game` varchar(256) NOT NULL,
+                `game` TEXT DEFAULT NULL,
                 PRIMARY KEY (`gameid`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """

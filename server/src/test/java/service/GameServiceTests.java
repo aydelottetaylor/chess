@@ -300,7 +300,7 @@ public class GameServiceTests {
     }
 
     // ------ Helper functions ------ //
-    private Map<String, List<Map<String, Object>>> getAllGames() {
+    private Map<String, List<Map<String, Object>>> getAllGames() throws Exception{
         return gameDataAccess.getAllGames();
     }
 

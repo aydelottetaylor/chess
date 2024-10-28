@@ -9,6 +9,7 @@ import java.util.Collection;
 
 public class MySQL_UserDAO implements UserDataAccess {
 
+    // Creates database and all tables
     public static void createDatabase() {
         try {
             DatabaseManager.createDatabase();
@@ -17,6 +18,7 @@ public class MySQL_UserDAO implements UserDataAccess {
         }
     }
 
+    // Gets user on username
     public UserData getUser(String username) throws Exception {
         try(var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM users WHERE username =?";
@@ -34,6 +36,7 @@ public class MySQL_UserDAO implements UserDataAccess {
         return null;
     }
 
+    // Reads user data from statement and returns in UserData format
     private UserData readUser(ResultSet rs) throws SQLException {
         var username = rs.getString("username");
         var password = rs.getString("password");
@@ -59,7 +62,7 @@ public class MySQL_UserDAO implements UserDataAccess {
         return result;
     }
 
-    // Add user or update user to HashMap
+    // Add user
     public void addUser(UserData user) throws Exception {
         try {
             var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
@@ -69,7 +72,7 @@ public class MySQL_UserDAO implements UserDataAccess {
         }
     }
 
-    // Clear HashMap of users
+    // Clear users
     public void clearUsers() throws Exception {
         try {
             var statement = "TRUNCATE TABLE users";
