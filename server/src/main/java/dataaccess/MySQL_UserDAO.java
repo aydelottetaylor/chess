@@ -63,10 +63,11 @@ public class MySQL_UserDAO implements UserDataAccess {
     }
 
     // Add user
-    public void addUser(UserData user) throws Exception {
+    public void addUser(UserData user, String password) throws Exception {
         try {
+
             var statement = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
-            DatabaseManager.executeUpdate(statement, user.username(), user.password(), user.email());
+            DatabaseManager.executeUpdate(statement, user.username(), password, user.email());
         } catch (Exception e) {
             throw new DataAccessException(500, e.getMessage());
         }

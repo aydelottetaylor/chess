@@ -72,12 +72,12 @@ public class MySQL_AuthDAO implements AuthDataAccess {
     }
 
     // Clear all auth information from database
-    public void clearAuths() throws Exception {
+    public void clearAuths() {
         try {
             var statement = "TRUNCATE TABLE auths";
             DatabaseManager.executeUpdate(statement);
         } catch (Exception e) {
-            throw new DataAccessException(500, e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

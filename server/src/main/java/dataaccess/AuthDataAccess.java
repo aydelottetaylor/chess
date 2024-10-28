@@ -9,7 +9,7 @@ public interface AuthDataAccess {
     void addAuthToken(String username, String authToken) throws Exception;
     AuthData getAuthInfoByToken(String token) throws Exception;
     void removeAuthorization(String token) throws Exception;
-    void clearAuths() throws Exception;
+    void clearAuths();
     Collection<AuthData> getAllAuths() throws Exception;
 
 }

@@ -220,7 +220,8 @@ public class UserServiceTests {
         assertEquals(5, getAllUsers().size());
         assertEquals(5, getAllAuths().size());
 
-        userService.clearUsersAndAuths();
+        userService.clearUsers();
+        userService.clearAuths();
 
         assertEquals(0, getAllUsers().size());
         assertEquals(0, getAllAuths().size());

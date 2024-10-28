@@ -32,7 +32,8 @@ public class GameService {
     // Calls clear users and auths in UserService and then clears game data
     public void clearDatabase() throws Exception {
         try {
-            userService.clearUsersAndAuths();
+            userService.clearUsers();
+            userService.clearAuths();
             gameDataAccess.clearGames();
         } catch (Exception e) {
             throw new ServiceException(500, "Error: error thrown in clear database");

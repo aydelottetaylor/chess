@@ -26,6 +26,11 @@ public class GameServiceTests {
         authDataAccess = userService.getAuthDataAccess();
     }
 
+    @AfterEach
+    void teardown() throws Exception {
+        gameService.clearDatabase();
+    }
+
     @Test
     @DisplayName("Create Game Success")
     public void createGameSuccess() throws Exception {

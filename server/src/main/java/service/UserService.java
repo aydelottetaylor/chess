@@ -2,6 +2,8 @@ package service;
 
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.Objects;
 import java.util.Random;
 
@@ -27,7 +29,7 @@ public class UserService {
             if (userDataAccess.getUser(newUser.username()) != null) {
                 throw new ServiceException(403, "Error: already taken");
             } else {
-                userDataAccess.addUser(newUser);
+                userDataAccess.addUser(newUser, BCrypt.hashpw(newUser.password(), BCrypt.gensalt()));
                 authDataAccess.addAuthToken(newUser.username(), generateAuthToken());
             }
 
@@ -41,7 +43,7 @@ public class UserService {
         if (user == null) {
             throw new ServiceException(401, "Error: unauthorized, no matching user registered");
         }
-        if (Objects.equals(user.password(), userInfo.password())) {
+        if (BCrypt.checkpw(userInfo.password(), user.password())) {
             authDataAccess.addAuthToken(userInfo.username(), generateAuthToken());
             return authDataAccess.getAuthInfoByUsername(userInfo.username());
         } else {
@@ -63,9 +65,13 @@ public class UserService {
         }
     }
 
-    // Clears all user and authorization data from stored data
-    public void clearUsersAndAuths() throws Exception {
+    // Clears all user data from stored data
+    public void clearUsers() throws Exception {
         userDataAccess.clearUsers();
+    }
+
+    // Clears all auth data from stored data
+    public void clearAuths() {
         authDataAccess.clearAuths();
     }
 
