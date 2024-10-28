@@ -1,10 +1,11 @@
-package dataaccess;
+package dataaccess.old;
 
+import dataaccess.UserDataAccess;
 import model.UserData;
 import java.util.HashMap;
 import java.util.Collection;
 
-public class UserDAOMemory implements UserDataAccess {
+public class UserDAO implements UserDataAccess {
     final private HashMap<String, UserData> users = new HashMap<>();
 
     // Get a user from HashMap

@@ -12,7 +12,7 @@ public class GameService {
     private final UserService userService;
 
     public GameService(UserService userService) {
-        this.gameDataAccess = new GameDAO();
+        this.gameDataAccess = new MySQL_GameDAO();
         this.userService = userService;
     }
 
@@ -36,10 +36,10 @@ public class GameService {
     }
 
     // Returns all existing games, checks user authorization
-    public Map<String, List<Map<String, Object>>> getAllGames(String authToken) throws Exception {
-        userService.authorizeUser(authToken);
-        return gameDataAccess.getAllGames();
-    }
+//    public Map<String, List<Map<String, Object>>> getAllGames(String authToken) throws Exception {
+//        userService.authorizeUser(authToken);
+//        return gameDataAccess.getAllGames();
+//    }
 
     // Adds user to game as requested color, checks user authorization and that the color is WHITE or BLACK
     public void joinGame(String authToken, JoinGameData gameData) throws Exception {

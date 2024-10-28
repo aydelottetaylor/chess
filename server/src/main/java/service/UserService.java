@@ -12,8 +12,9 @@ public class UserService {
     final private static int AUTHLENGTH = 20;
 
     public UserService() {
-        this.userDataAccess = new UserDAOMemory();
-        this.authDataAccess = new AuthDAO();
+        this.userDataAccess = new MySQL_UserDAO();
+        this.authDataAccess = new MySQL_AuthDAO();
+        MySQL_UserDAO.createDatabase();
     }
 
     // Checks passed data to make user all data exists, checks that username 

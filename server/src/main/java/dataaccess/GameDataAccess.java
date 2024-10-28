@@ -8,8 +8,8 @@ import java.util.Map;
 
 public interface GameDataAccess {
     GameData createNewGame(String gameName) throws Exception;
-    void clearGames();
-    Map<String, List<Map<String, Object>>> getAllGames();
+    void clearGames() throws Exception;
+//    Map<String, List<Map<String, Object>>> getAllGames();
     void addUserToGame(String username, JoinGameData gameData) throws Exception;
 
 }

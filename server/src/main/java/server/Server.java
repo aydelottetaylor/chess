@@ -94,8 +94,9 @@ public class Server {
     // Get all existing games and their information, requires authentication
     private Object getGames(Request req, Response res) throws Exception {
         var authToken = req.headers("Authorization");
-        var response = gameService.getAllGames(authToken);
-        return serializer.toJson(response);
+//        var response = gameService.getAllGames(authToken);
+//        return serializer.toJson(response);
+        return "";
     }
 
     // Create a new game, requires authentication and game name
