@@ -44,8 +44,9 @@ public class UserService {
             throw new ServiceException(401, "Error: unauthorized, no matching user registered");
         }
         if (BCrypt.checkpw(userInfo.password(), user.password())) {
-            authDataAccess.addAuthToken(userInfo.username(), generateAuthToken());
-            return authDataAccess.getAuthInfoByUsername(userInfo.username());
+            String token = generateAuthToken();
+            authDataAccess.addAuthToken(userInfo.username(), token);
+            return new AuthData(userInfo.username(), token);
         } else {
             throw new ServiceException(401, "Error: unauthorized, wrong password");
         }

@@ -49,7 +49,10 @@ public class GameService {
     // Adds user to game as requested color, checks user authorization and that the color is WHITE or BLACK
     public void joinGame(String authToken, JoinGameData gameData) throws Exception {
         userService.authorizeUser(authToken);
+        // Check color is black or white and that game exists
         if (!Objects.equals(gameData.playerColor(), "WHITE") && !Objects.equals(gameData.playerColor(), "BLACK")) {
+            throw new ServiceException(400, "Error: bad request");
+        } else if (gameData.gameID() == null || Objects.equals(gameDataAccess.getGameById(gameData.gameID()), null)) {
             throw new ServiceException(400, "Error: bad request");
         }
 

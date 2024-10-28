@@ -90,8 +90,8 @@ public class MySQL_GameDAO implements GameDataAccess {
 
                         Map<String, Object> gameMap = new HashMap<>();
                         gameMap.put("gameID", game.getGameId());
-                        gameMap.put("whiteUsername", game.getWhiteUsername() != null ? game.getWhiteUsername() : null);
-                        gameMap.put("blackUsername", game.getBlackUsername() != null ? game.getBlackUsername() : null);
+                        gameMap.put("whiteUsername", !Objects.equals(game.getWhiteUsername(), "") ? game.getWhiteUsername() : null);
+                        gameMap.put("blackUsername", !Objects.equals(game.getBlackUsername(), "") ? game.getBlackUsername() : null);
                         gameMap.put("gameName", game.getGameName());
 
                         gameList.add(gameMap);
