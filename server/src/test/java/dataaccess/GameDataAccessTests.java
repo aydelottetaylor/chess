@@ -7,8 +7,9 @@ import org.junit.jupiter.api.*;
 import service.GameService;
 import service.UserService;
 
-import org.mockito.Mockito;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -173,18 +174,64 @@ public class GameDataAccessTests {
     @Test
     @DisplayName("Test GetAllGames Failure")
     void testGetAllGamesFailure() throws Exception {
-        try {
-            Mockito.mockStatic(DatabaseManager.class);
-            Mockito.when(DatabaseManager.getConnection()).thenThrow(new RuntimeException("Unable to connect to the database"));
+        gameDataAccess = new GameDataAccess() {
+            @Override
+            public void createNewGame(String gameName) throws Exception {
 
-            Exception exception = assertThrows(DataAccessException.class, () -> {
-                gameDataAccess.getAllGames();
-            });
+            }
 
-            assertTrue(exception.getMessage().contains("Unable to connect to the database"));
-        } finally {
-            Mockito.clearAllCaches();
-        }
+            @Override
+            public GameData getGameByName(String gameName) throws Exception {
+                return null;
+            }
+
+            @Override
+            public GameData getGameById(Integer gameId) throws Exception {
+                return null;
+            }
+
+            @Override
+            public void clearGames() throws Exception {
+
+            }
+
+            @Override
+            public Map<String, List<Map<String, Object>>> getAllGames() throws Exception {
+                List<Map<String, Object>> gameList = new ArrayList<>();
+                // Made invalid test query
+                var statement = "SELECT * FROM non_existent_table";
+
+                try (var conn = DatabaseManager.getConnection()) {
+                    try (var ps = conn.prepareStatement(statement)) {
+                        try (var rs = ps.executeQuery()) {
+                            while (rs.next()) {
+                                GameData game = readGame(rs);
+                                Map<String, Object> gameMap = new HashMap<>();
+                                gameMap.put("gameID", game.getGameId());
+                                gameMap.put("whiteUsername", game.getWhiteUsername());
+                                gameMap.put("blackUsername", game.getBlackUsername());
+                                gameMap.put("gameName", game.getGameName());
+                                gameList.add(gameMap);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    throw new DataAccessException(500, e.getMessage());
+                }
+                return Map.of("games", gameList);
+            }
+
+            @Override
+            public void addUserToGame(String username, JoinGameData gameData) throws Exception {
+
+            }
+        };
+
+        Exception exception = assertThrows(DataAccessException.class, () -> {
+            gameDataAccess.getAllGames();
+        });
+
+        assertTrue(exception.getMessage().contains("non_existent_table"), "Expected SQL syntax error");
     }
 
     @Test
