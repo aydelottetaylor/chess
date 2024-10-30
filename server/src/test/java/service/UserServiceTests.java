@@ -13,7 +13,7 @@ public class UserServiceTests {
     private AuthDataAccess authDataAccess;
 
     @BeforeEach
-    void setup() throws Exception{
+    void setup() throws Exception {
         userService = new UserService();
         userDataAccess = userService.getUserDataAccess();
         authDataAccess = userService.getAuthDataAccess();

@@ -4,7 +4,6 @@ import model.UserData;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Collection;
 
 public class MySQL_UserDAO implements UserDataAccess {
@@ -82,9 +81,4 @@ public class MySQL_UserDAO implements UserDataAccess {
             throw new DataAccessException(500, e.getMessage());
         }
     }
-
-
-
-
-
 }

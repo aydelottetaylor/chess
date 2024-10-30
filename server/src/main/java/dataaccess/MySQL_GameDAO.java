@@ -110,9 +110,11 @@ public class MySQL_GameDAO implements GameDataAccess {
             if (Objects.equals(gameData.playerColor(), "WHITE")) {
                 var statement = "UPDATE games SET whiteusername=? WHERE gameid=?";
                 DatabaseManager.executeUpdate(statement, username, gameData.gameID());
-            } else {
+            } else if (Objects.equals(gameData.playerColor(), "BLACK")){
                 var statement = "UPDATE games SET blackusername=? WHERE gameid=?";
                 DatabaseManager.executeUpdate(statement, username, gameData.gameID());
+            } else {
+                throw new DataAccessException(500, "Color passed in is not white or black.");
             }
         } catch (Exception e) {
             throw new DataAccessException(500, e.getMessage());
