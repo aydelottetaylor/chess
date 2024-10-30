@@ -40,7 +40,7 @@ public class GameDataAccessTests {
             var ps = conn.prepareStatement(statement);
             var rs = ps.executeQuery();
             if (rs.next()) {
-                GameData game = readGame(ps.executeQuery());
+                GameData game = readTheGame(ps.executeQuery());
 
                 assertEquals("gameName", game.getGameName());
                 assertEquals("", game.whiteUsername());
@@ -206,7 +206,7 @@ public class GameDataAccessTests {
                     try (var ps = conn.prepareStatement(statement)) {
                         try (var rs = ps.executeQuery()) {
                             while (rs.next()) {
-                                GameData game = readGame(rs);
+                                GameData game = readTheGame(rs);
                                 Map<String, Object> gameMap = new HashMap<>();
                                 gameMap.put("gameID", game.getGameId());
                                 gameMap.put("whiteUsername", game.getWhiteUsername());
@@ -266,12 +266,12 @@ public class GameDataAccessTests {
     // ------ HELPER FUNCTIONS ------ //
 
     // Read game data from statement and pass back in GameData format
-    private GameData readGame(ResultSet rs) throws Exception {
+    private GameData readTheGame(ResultSet rs) throws Exception {
         int gameId = rs.getInt("gameid");
-        var whiteUser = rs.getString("whiteusername");
-        var blackUser = rs.getString("blackusername");
-        var gameName = rs.getString("gamename");
-        var json = rs.getString("game");
+        String whiteUser = rs.getString("whiteusername");
+        String blackUser = rs.getString("blackusername");
+        String gameName = rs.getString("gamename");
+        String json = rs.getString("game");
         var game = new Gson().fromJson(json, ChessGame.class);
         return new GameData(gameId, whiteUser, blackUser, gameName, game);
     }

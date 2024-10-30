@@ -56,7 +56,7 @@ public class UserDataAccessTests {
             var ps = conn.prepareStatement(statement);
             var rs = ps.executeQuery();
             if (rs.next()) {
-                UserData user = readUser(ps.executeQuery());
+                UserData user = readTheUser(ps.executeQuery());
 
                 assertEquals("gameName", user.username());
                 assertEquals("hashedpassword", user.password());
@@ -107,10 +107,10 @@ public class UserDataAccessTests {
 
     // ------ HELPER FUNCTIONS ------ //
 
-    private UserData readUser(ResultSet rs) throws SQLException {
-        var username = rs.getString("username");
-        var password = rs.getString("password");
-        var email = rs.getString("email");
+    private UserData readTheUser(ResultSet rs) throws SQLException {
+        String username = rs.getString("username");
+        String password = rs.getString("password");
+        String email = rs.getString("email");
         return new UserData(username, password, email);
     }
 }
