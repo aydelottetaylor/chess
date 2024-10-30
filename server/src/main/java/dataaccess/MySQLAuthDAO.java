@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MySQL_AuthDAO implements AuthDataAccess {
+public class MySQLAuthDAO implements AuthDataAccess {
 
     // Get Auth Info by Username
     public AuthData getAuthInfoByUsername(String username) throws Exception {

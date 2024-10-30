@@ -6,7 +6,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MySQL_UserDAO implements UserDataAccess {
+public class MySQLUserDAO implements UserDataAccess {
 
     // Creates database and all tables
     public static void createDatabase() {

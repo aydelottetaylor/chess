@@ -68,7 +68,7 @@ public class DatabaseManager {
     /**
      * Creates the database tables if they do not already exist.
      */
-    static private final String[] createStatements = {
+    static private final String[] CREATE_STATEMENTS = {
             """
             CREATE TABLE IF NOT EXISTS  users (
                 `userid` int NOT NULL AUTO_INCREMENT,
@@ -103,7 +103,7 @@ public class DatabaseManager {
      */
     static private void configureDatabase() throws Exception {
         try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
+            for (var statement : CREATE_STATEMENTS) {
                 try (var preparedStatement = conn.prepareStatement(statement)) {
                     preparedStatement.executeUpdate();
                 }

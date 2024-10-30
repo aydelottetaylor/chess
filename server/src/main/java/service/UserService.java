@@ -4,7 +4,6 @@ import dataaccess.*;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.util.Objects;
 import java.util.Random;
 
 public class UserService {
@@ -14,9 +13,9 @@ public class UserService {
     final private static int AUTHLENGTH = 20;
 
     public UserService() {
-        this.userDataAccess = new MySQL_UserDAO();
-        this.authDataAccess = new MySQL_AuthDAO();
-        MySQL_UserDAO.createDatabase();
+        this.userDataAccess = new MySQLUserDAO();
+        this.authDataAccess = new MySQLAuthDAO();
+        MySQLUserDAO.createDatabase();
     }
 
     // Checks passed data to make user all data exists, checks that username 

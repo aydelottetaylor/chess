@@ -12,7 +12,7 @@ public class GameService {
     private final UserService userService;
 
     public GameService(UserService userService) {
-        this.gameDataAccess = new MySQL_GameDAO();
+        this.gameDataAccess = new MySQLGameDAO();
         this.userService = userService;
     }
 

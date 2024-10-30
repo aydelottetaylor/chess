@@ -7,7 +7,7 @@ import model.*;
 import java.sql.*;
 import java.util.*;
 
-public class MySQL_GameDAO implements GameDataAccess {
+public class MySQLGameDAO implements GameDataAccess {
 
     // Creates a new game and adds to database
     public void createNewGame(String gameName) throws Exception {
