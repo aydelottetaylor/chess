@@ -74,19 +74,22 @@ public class UserDataAccessTests {
             userDataAccess.addUser(new UserData(null, "password", "email"), "hashedpassword");
         });
         assertEquals(500, exception.statusCode());
-        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'username' cannot be null", exception.getMessage());
+        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'username' " +
+                "cannot be null", exception.getMessage());
 
         exception = assertThrows(DataAccessException.class, () -> {
             userDataAccess.addUser(new UserData("username", "password", "email"), null);
         });
         assertEquals(500, exception.statusCode());
-        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'password' cannot be null", exception.getMessage());
+        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'password' " +
+                "cannot be null", exception.getMessage());
 
         exception = assertThrows(DataAccessException.class, () -> {
             userDataAccess.addUser(new UserData("username", "password", null), "hashedpassword");
         });
         assertEquals(500, exception.statusCode());
-        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'email' cannot be null", exception.getMessage());
+        assertEquals("unable to update database: INSERT INTO users (username, password, email) VALUES (?, ?, ?), Column 'email' " +
+                "cannot be null", exception.getMessage());
     }
 
     @Test

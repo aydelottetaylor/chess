@@ -60,7 +60,8 @@ public class GameDataAccessTests {
         });
 
         assertEquals(500, exception.statusCode());
-        assertEquals("unable to update database: INSERT INTO games (whiteusername, blackusername, gamename, game) VALUES (?, ?, ?, ?), Column 'gamename' cannot be null", exception.getMessage());
+        assertEquals("unable to update database: INSERT INTO games (whiteusername, blackusername, " +
+                "gamename, game) VALUES (?, ?, ?, ?), Column 'gamename' cannot be null", exception.getMessage());
     }
 
     @Test

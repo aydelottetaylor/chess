@@ -132,7 +132,8 @@ public class AuthDataAccessTests {
             });
 
             assertEquals(500, exception.statusCode());
-            assertEquals("unable to update database: INSERT INTO auths (username, token) VALUES (?, ?), Column 'username' cannot be null", exception.getMessage());
+            assertEquals("unable to update database: INSERT INTO auths (username, token) VALUES (?, ?), Column 'username' " +
+                    "cannot be null", exception.getMessage());
         }
 
         @Test
@@ -143,7 +144,8 @@ public class AuthDataAccessTests {
             });
 
             assertEquals(500, exception.statusCode());
-            assertEquals("unable to update database: INSERT INTO auths (username, token) VALUES (?, ?), Column 'token' cannot be null", exception.getMessage());
+            assertEquals("unable to update database: INSERT INTO auths (username, token) VALUES (?, ?), Column 'token' " +
+                    "cannot be null", exception.getMessage());
         }
 
     }
