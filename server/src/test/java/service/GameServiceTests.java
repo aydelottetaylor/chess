@@ -2,7 +2,6 @@ package service;
 
 import chess.ChessGame;
 import model.*;
-import service.*;
 import dataaccess.*;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,12 +17,14 @@ public class GameServiceTests {
     private AuthDataAccess authDataAccess;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         userService = new UserService();
         gameService = new GameService(userService);
         gameDataAccess = gameService.getGameDataAccess();
         userDataAccess = userService.getUserDataAccess();
         authDataAccess = userService.getAuthDataAccess();
+
+        gameService.clearDatabase();
     }
 
     @Test
@@ -40,7 +41,7 @@ public class GameServiceTests {
         Map<String, Object> gameMap = allGames.get("games").getFirst();
 
         assertEquals(1, allGames.get("games").size());
-        assertEquals(1001, gameMap.get("gameID"));
+        assertEquals(1, gameMap.get("gameID"));
         assertEquals("newGame", gameMap.get("gameName"));
         assertNull(gameMap.get("whiteUsername"));
         assertNull(gameMap.get("blackUsername"));
@@ -48,8 +49,8 @@ public class GameServiceTests {
 
         assertEquals(game.gameName(), gameMap.get("gameName"));
         assertEquals(game.gameID(), gameMap.get("gameID"));
-        assertEquals(game.whiteUsername(), gameMap.get("whiteUsername"));
-        assertEquals(game.blackUsername(), gameMap.get("blackUsername"));
+        assertNull(gameMap.get("whiteUsername"));
+        assertNull(gameMap.get("blackUsername"));
 
     }
 
@@ -115,10 +116,13 @@ public class GameServiceTests {
         assertEquals(5, getAllUsers().size());
         assertEquals(5, getAllAuths().size());
 
-        GameData newGame = new GameData(0, null, null, "newGame", new ChessGame());
-        for (int i = 0; i < 5; ++i) {
-            gameService.createGame(newGame, auth.authToken());
-        }
+        gameService.createGame(new GameData(0, null, null, "newGame", new ChessGame()), auth.authToken());
+        gameService.createGame(new GameData(0, null, null, "newGame1", new ChessGame()), auth.authToken());
+        gameService.createGame(new GameData(0, null, null, "newGame2", new ChessGame()), auth.authToken());
+        gameService.createGame(new GameData(0, null, null, "newGame3", new ChessGame()), auth.authToken());
+        gameService.createGame(new GameData(0, null, null, "newGame4", new ChessGame()), auth.authToken());
+
+
         assertEquals(5, getAllGames().get("games").size());
 
         gameService.clearDatabase();
@@ -140,27 +144,27 @@ public class GameServiceTests {
 
         assertEquals(5, games.size());
 
-        assertEquals(1001, games.getFirst().get("gameID"));
+        assertEquals(1, games.getFirst().get("gameID"));
         assertEquals("newGame", games.getFirst().get("gameName"));
         assertNull(games.get(0).get("blackUsername"));
         assertEquals("username", games.getFirst().get("whiteUsername"));
 
-        assertEquals(1002, games.get(1).get("gameID"));
+        assertEquals(2, games.get(1).get("gameID"));
         assertEquals("newGame1", games.get(1).get("gameName"));
         assertNull(games.get(1).get("whiteUsername"));
         assertEquals("username", games.get(1).get("blackUsername"));
 
-        assertEquals(1003, games.get(2).get("gameID"));
+        assertEquals(3, games.get(2).get("gameID"));
         assertEquals("newGame2", games.get(2).get("gameName"));
         assertNull(games.get(2).get("blackUsername"));
         assertEquals("username", games.get(2).get("whiteUsername"));
 
-        assertEquals(1004, games.get(3).get("gameID"));
+        assertEquals(4, games.get(3).get("gameID"));
         assertEquals("newGame3", games.get(3).get("gameName"));
         assertNull(games.get(3).get("whiteUsername"));
         assertEquals("username", games.get(3).get("blackUsername"));
 
-        assertEquals(1005, games.get(4).get("gameID"));
+        assertEquals(5, games.get(4).get("gameID"));
         assertEquals("newGame4", games.get(4).get("gameName"));
         assertNull(games.get(4).get("whiteUsername"));
         assertEquals("username", games.get(4).get("blackUsername"));
@@ -193,35 +197,35 @@ public class GameServiceTests {
         AuthData auth2 = userService.registerUser(newUser);
 
         setupGames(auth);
-        gameService.joinGame(auth2.authToken(), new JoinGameData("BLACK", 1001));
-        gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1004));
-        gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1005));
+        gameService.joinGame(auth2.authToken(), new JoinGameData("BLACK", 1));
+        gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 4));
+        gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 5));
 
         List<Map<String, Object>> games = gameService.getAllGames(auth.authToken()).get("games");
 
         assertEquals(5, games.size());
 
-        assertEquals(1001, games.getFirst().get("gameID"));
+        assertEquals(1, games.getFirst().get("gameID"));
         assertEquals("newGame", games.getFirst().get("gameName"));
         assertEquals("username2", games.get(0).get("blackUsername"));
         assertEquals("username", games.getFirst().get("whiteUsername"));
 
-        assertEquals(1002, games.get(1).get("gameID"));
+        assertEquals(2, games.get(1).get("gameID"));
         assertEquals("newGame1", games.get(1).get("gameName"));
         assertNull(games.get(1).get("whiteUsername"));
         assertEquals("username", games.get(1).get("blackUsername"));
 
-        assertEquals(1003, games.get(2).get("gameID"));
+        assertEquals(3, games.get(2).get("gameID"));
         assertEquals("newGame2", games.get(2).get("gameName"));
         assertNull(games.get(2).get("blackUsername"));
         assertEquals("username", games.get(2).get("whiteUsername"));
 
-        assertEquals(1004, games.get(3).get("gameID"));
+        assertEquals(4, games.get(3).get("gameID"));
         assertEquals("newGame3", games.get(3).get("gameName"));
         assertEquals("username2", games.get(3).get("whiteUsername"));
         assertEquals("username", games.get(3).get("blackUsername"));
 
-        assertEquals(1005, games.get(4).get("gameID"));
+        assertEquals(5, games.get(4).get("gameID"));
         assertEquals("newGame4", games.get(4).get("gameName"));
         assertEquals("username2", games.get(4).get("whiteUsername"));
         assertEquals("username", games.get(4).get("blackUsername"));
@@ -269,8 +273,8 @@ public class GameServiceTests {
             UserData newUser = new UserData("username", "password", "email@email.com");
             AuthData auth = userService.registerUser(newUser);
 
-            DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-                gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
+            ServiceException exception = assertThrows(ServiceException.class, () -> {
+                gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1));
             });
 
             assertEquals(400, exception.statusCode());
@@ -284,13 +288,13 @@ public class GameServiceTests {
             AuthData auth = userService.registerUser(newUser);
             GameData newGame = new GameData(0, null, null, "newGame", new ChessGame());
             gameService.createGame(newGame, auth.authToken());
-            gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
+            gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1));
 
             newUser = new UserData("username2", "password", "email@email.com");
             AuthData auth2 = userService.registerUser(newUser);
 
-            DataAccessException exception = assertThrows(DataAccessException.class, () -> {
-                gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1001));
+            ServiceException exception = assertThrows(ServiceException.class, () -> {
+                gameService.joinGame(auth2.authToken(), new JoinGameData("WHITE", 1));
             });
 
             assertEquals(403, exception.statusCode());
@@ -300,7 +304,7 @@ public class GameServiceTests {
     }
 
     // ------ Helper functions ------ //
-    private Map<String, List<Map<String, Object>>> getAllGames() {
+    private Map<String, List<Map<String, Object>>> getAllGames() throws Exception{
         return gameDataAccess.getAllGames();
     }
 
@@ -336,11 +340,11 @@ public class GameServiceTests {
         newGame = new GameData(0, null, null, "newGame4", new ChessGame());
         gameService.createGame(newGame, auth.authToken());
 
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1001));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1002));
-        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1003));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1004));
-        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 1005));
+        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 1));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 2));
+        gameService.joinGame(auth.authToken(), new JoinGameData("WHITE", 3));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 4));
+        gameService.joinGame(auth.authToken(), new JoinGameData("BLACK", 5));
     }
 
 }

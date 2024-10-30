@@ -7,9 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 public interface GameDataAccess {
-    GameData createNewGame(String gameName) throws Exception;
-    void clearGames();
-    Map<String, List<Map<String, Object>>> getAllGames();
+    void createNewGame(String gameName) throws Exception;
+    GameData getGameByName(String gameName) throws Exception;
+    GameData getGameById(Integer gameId) throws Exception;
+    void clearGames() throws Exception;
+    Map<String, List<Map<String, Object>>> getAllGames() throws Exception;
     void addUserToGame(String username, JoinGameData gameData) throws Exception;
 
 }

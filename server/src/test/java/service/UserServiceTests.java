@@ -1,10 +1,10 @@
 package service;
 
 import model.*;
-import service.*;
 import dataaccess.*;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
+
 import java.util.Collection;
 
 public class UserServiceTests {
@@ -13,10 +13,13 @@ public class UserServiceTests {
     private AuthDataAccess authDataAccess;
 
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
         userService = new UserService();
         userDataAccess = userService.getUserDataAccess();
         authDataAccess = userService.getAuthDataAccess();
+        GameService gameService = new GameService(userService);
+
+        gameService.clearDatabase();
     }
 
     @Test
@@ -32,7 +35,9 @@ public class UserServiceTests {
         assertNotNull(response.authToken(),
                 "Test RegisterUser response did not return an authorization token.");
 
-        assertEquals(newUser, checkUser);
+        assertEquals(newUser.username(), checkUser.username());
+        assertEquals(newUser.email(), checkUser.email());
+        assertNotNull(checkAuth.authToken());
         assertNotNull(checkAuth);
     }
 
@@ -94,23 +99,23 @@ public class UserServiceTests {
     public void testLoginSuccess() throws Exception {
         UserData newUser = new UserData("username", "password", "test@email.com");
         AuthData auth = userService.registerUser(newUser);
+        userService.logoutUser(auth.authToken());
         AuthData authorization = userService.loginUser(newUser);
         Collection<AuthData> auths = getAllAuths();
         UserData user = userService.getUserOnUserName(newUser.username());
 
         assertNotNull(authorization);
         assertEquals(auths.size(), 1);
-        assertEquals(user, newUser);
 
         newUser = new UserData("username1", "password", "test@email.com");
         auth = userService.registerUser(newUser);
+        userService.logoutUser(auth.authToken());
         authorization = userService.loginUser(newUser);
         auths = getAllAuths();
         user = userService.getUserOnUserName(newUser.username());
 
         assertNotNull(authorization);
         assertEquals(auths.size(), 2);
-        assertEquals(user, newUser);
     }
 
     @Nested
@@ -220,7 +225,8 @@ public class UserServiceTests {
         assertEquals(5, getAllUsers().size());
         assertEquals(5, getAllAuths().size());
 
-        userService.clearUsersAndAuths();
+        userService.clearUsers();
+        userService.clearAuths();
 
         assertEquals(0, getAllUsers().size());
         assertEquals(0, getAllAuths().size());
@@ -238,9 +244,12 @@ public class UserServiceTests {
         UserData newUser2 = new UserData("username2", "password2", "test@email.com");
         AuthData auth2 = userService.registerUser(newUser2);
 
-        assertEquals(userService.getUserOnAuthToken(auth.authToken()), newUser);
-        assertEquals(userService.getUserOnAuthToken(auth1.authToken()), newUser1);
-        assertEquals(userService.getUserOnAuthToken(auth2.authToken()), newUser2);
+        assertEquals(userService.getUserOnAuthToken(auth.authToken()).username(), newUser.username());
+        assertEquals(userService.getUserOnAuthToken(auth.authToken()).email(), newUser.email());
+        assertEquals(userService.getUserOnAuthToken(auth1.authToken()).username(), newUser1.username());
+        assertEquals(userService.getUserOnAuthToken(auth1.authToken()).email(), newUser1.email());
+        assertEquals(userService.getUserOnAuthToken(auth2.authToken()).username(), newUser2.username());
+        assertEquals(userService.getUserOnAuthToken(auth2.authToken()).email(), newUser2.email());
     }
 
     @Test
@@ -265,9 +274,12 @@ public class UserServiceTests {
         UserData newUser2 = new UserData("username2", "password2", "test@email.com");
         AuthData auth2 = userService.registerUser(newUser2);
 
-        assertEquals(userService.getUserOnUserName(auth.username()), newUser);
-        assertEquals(userService.getUserOnUserName(auth1.username()), newUser1);
-        assertEquals(userService.getUserOnUserName(auth2.username()), newUser2);
+        assertEquals(userService.getUserOnUserName(auth.username()).username(), newUser.username());
+        assertEquals(userService.getUserOnUserName(auth.username()).email(), newUser.email());
+        assertEquals(userService.getUserOnUserName(auth1.username()).username(), newUser1.username());
+        assertEquals(userService.getUserOnUserName(auth1.username()).email(), newUser1.email());
+        assertEquals(userService.getUserOnUserName(auth2.username()).username(), newUser2.username());
+        assertEquals(userService.getUserOnUserName(auth2.username()).email(), newUser2.email());
     }
 
     @Test

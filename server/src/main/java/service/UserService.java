@@ -2,6 +2,8 @@ package service;
 
 import dataaccess.*;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.util.Objects;
 import java.util.Random;
 
@@ -12,8 +14,9 @@ public class UserService {
     final private static int AUTHLENGTH = 20;
 
     public UserService() {
-        this.userDataAccess = new UserDAO();
-        this.authDataAccess = new AuthDAO();
+        this.userDataAccess = new MySQL_UserDAO();
+        this.authDataAccess = new MySQL_AuthDAO();
+        MySQL_UserDAO.createDatabase();
     }
 
     // Checks passed data to make user all data exists, checks that username 
@@ -26,7 +29,7 @@ public class UserService {
             if (userDataAccess.getUser(newUser.username()) != null) {
                 throw new ServiceException(403, "Error: already taken");
             } else {
-                userDataAccess.addUser(newUser);
+                userDataAccess.addUser(newUser, BCrypt.hashpw(newUser.password(), BCrypt.gensalt()));
                 authDataAccess.addAuthToken(newUser.username(), generateAuthToken());
             }
 
@@ -40,9 +43,10 @@ public class UserService {
         if (user == null) {
             throw new ServiceException(401, "Error: unauthorized, no matching user registered");
         }
-        if (Objects.equals(user.password(), userInfo.password())) {
-            authDataAccess.addAuthToken(userInfo.username(), generateAuthToken());
-            return authDataAccess.getAuthInfoByUsername(userInfo.username());
+        if (BCrypt.checkpw(userInfo.password(), user.password())) {
+            String token = generateAuthToken();
+            authDataAccess.addAuthToken(userInfo.username(), token);
+            return new AuthData(userInfo.username(), token);
         } else {
             throw new ServiceException(401, "Error: unauthorized, wrong password");
         }
@@ -51,7 +55,7 @@ public class UserService {
     // Checks user authorization, removes authData from stored data to logout
     public void logoutUser(String authToken) throws Exception {
         authorizeUser(authToken);
-        authDataAccess.removeAuthorization(authDataAccess.getAuthInfoByToken(authToken));
+        authDataAccess.removeAuthorization(authToken);
     }
 
     // Checks that authToken given matches existing auth token, if doesn't match throws exception
@@ -62,9 +66,13 @@ public class UserService {
         }
     }
 
-    // Clears all user and authorization data from stored data
-    public void clearUsersAndAuths() throws Exception {
+    // Clears all user data from stored data
+    public void clearUsers() throws Exception {
         userDataAccess.clearUsers();
+    }
+
+    // Clears all auth data from stored data
+    public void clearAuths() {
         authDataAccess.clearAuths();
     }
 
