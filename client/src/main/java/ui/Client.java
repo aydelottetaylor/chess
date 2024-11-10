@@ -30,6 +30,7 @@ public class Client {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "quit" -> "quit";
+                case "creategame" -> createGame(params);
                 case "register" -> registerUser(params);
                 case "login" -> loginUser(params);
                 case "logout" -> logoutUser();
@@ -38,6 +39,19 @@ public class Client {
         } catch (Exception ex) {
             return ex.getMessage();
         }
+    }
+
+    public String createGame(String... params) throws Exception {
+        if (params.length <= 2) {
+            try {
+                String gameName = params[0];
+                server.createGame(new GameData(0, null, null, gameName, null), authData.authToken());
+            } catch (Exception ex) {
+                return ex.getMessage();
+            }
+            return "Game created successfully!";
+        }
+        throw new ClientException(500, "Expected: <gameName>");
     }
 
     public String registerUser(String... params) throws Exception {

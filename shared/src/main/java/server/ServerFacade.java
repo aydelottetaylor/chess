@@ -2,14 +2,18 @@ package server;
 
 import model.*;
 import com.google.gson.Gson;
+import org.junit.jupiter.api.DisplayNameGenerator;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URI;
+import java.util.logging.*;
 
 public class ServerFacade {
     private final String serverUrl;
+    private static final Logger logger = Logger.getLogger("Server exception logs.");
+    private static FileHandler fileHandler;
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -30,6 +34,10 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, authToken);
     }
 
+    public void createGame(GameData game, String authToken) throws ServerFacadeException {
+        var path = "/game";
+        this.makeRequest("POST", path, game, null, authToken);
+    }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ServerFacadeException {
         try {
@@ -63,8 +71,9 @@ public class ServerFacade {
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ServerFacadeException {
         var status = http.getResponseCode();
+        var message = http.getResponseMessage();
         if (!isSuccessful(status)) {
-            throw new ServerFacadeException(status, "failure: " + status);
+            throw new ServerFacadeException(status, "failure: " + message);
         }
     }
 

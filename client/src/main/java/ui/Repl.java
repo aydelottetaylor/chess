@@ -26,10 +26,10 @@ public class Repl implements NotificationHandler {
 
             try {
                 result = client.eval(line);
-                System.out.print(SET_TEXT_COLOR_BLUE + result);
+                System.out.print(SET_TEXT_COLOR_GREEN+ result);
             } catch (Throwable e) {
                 var msg = e.getMessage();
-                System.out.print(msg);
+                System.out.print(SET_TEXT_COLOR_RED + msg);
             }
         }
         System.out.println();
@@ -41,7 +41,7 @@ public class Repl implements NotificationHandler {
     }
 
     private void printPrompt(String state) {
-        System.out.print("\n" + SET_TEXT_COLOR_BLUE + "[" + state + "] >>> " + SET_TEXT_COLOR_GREEN);
+        System.out.print("\n" + SET_TEXT_COLOR_BLUE + "[" + state + "] >>> " + SET_TEXT_COLOR_BLUE);
     }
 
 }
