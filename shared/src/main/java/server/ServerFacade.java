@@ -1,7 +1,7 @@
 package server;
 
 import model.*;
-import com.google.gson.Gson;
+import com.google.gson.*;
 import org.junit.jupiter.api.DisplayNameGenerator;
 
 import java.io.*;
@@ -71,10 +71,25 @@ public class ServerFacade {
 
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ServerFacadeException {
         var status = http.getResponseCode();
-        var message = http.getResponseMessage();
+        var message = readStream(http.getErrorStream());
         if (!isSuccessful(status)) {
-            throw new ServerFacadeException(status, "failure: " + message);
+            JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+            message = jsonObject.has("message") ? jsonObject.get("message").getAsString() : "No message found";
+            throw new ServerFacadeException(status, message);
         }
+    }
+
+    private String readStream(InputStream stream) throws IOException {
+        if (stream == null) return ""; // Handle cases where the stream might be null
+
+        StringBuilder response = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line).append("\n");
+            }
+        }
+        return response.toString();
     }
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
