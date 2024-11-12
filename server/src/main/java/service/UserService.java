@@ -26,7 +26,7 @@ public class UserService {
             }
 
             if (userDataAccess.getUser(newUser.username()) != null) {
-                throw new ServiceException(403, "Error: already taken");
+                throw new ServiceException(403, "Error: Username already taken");
             } else {
                 userDataAccess.addUser(newUser, BCrypt.hashpw(newUser.password(), BCrypt.gensalt()));
                 authDataAccess.addAuthToken(newUser.username(), generateAuthToken());

@@ -1,8 +1,13 @@
 package server;
 
+import com.google.gson.reflect.TypeToken;
 import model.*;
 import com.google.gson.*;
 import org.junit.jupiter.api.DisplayNameGenerator;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -37,6 +42,17 @@ public class ServerFacade {
     public void createGame(GameData game, String authToken) throws ServerFacadeException {
         var path = "/game";
         this.makeRequest("POST", path, game, null, authToken);
+    }
+
+    public List<GameData> fetchAllGames(String authToken) throws ServerFacadeException {
+        var path = "/game";
+        GameResponse gameResponse = this.makeRequest("GET", path, null, GameResponse.class, authToken);
+        return gameResponse.getGames();
+    }
+
+    public void joinGame(JoinGameData game, String authToken) throws ServerFacadeException {
+        var path = "/game";
+        this.makeRequest("PUT", path, game, null, authToken);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ServerFacadeException {
@@ -94,10 +110,22 @@ public class ServerFacade {
 
     private static <T> T readBody(HttpURLConnection http, Class<T> responseClass) throws IOException {
         T response = null;
+
+        // Read the response body from the connection
         if (http.getContentLength() < 0) {
             try (InputStream respBody = http.getInputStream()) {
                 InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseClass != null) {
+
+                if (responseClass == String.class) {
+                    // If expecting a raw String, read the entire stream and return as String
+                    StringBuilder result = new StringBuilder();
+                    BufferedReader bufferedReader = new BufferedReader(reader);
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    return responseClass.cast(result.toString());
+                } else if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
                 }
             }
