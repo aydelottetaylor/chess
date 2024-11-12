@@ -4,13 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import chess.ChessGame;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import model.*;
-import ui.websocket.NotificationHandler;
 import server.ServerFacade;
-import ui.websocket.WebSocketException;
-import ui.websocket.WebSocketFacade;
-
+import ui.websocket.*;
+import static ui.EscapeSequences.*;
 import static java.util.Objects.isNull;
 
 public class Client {
@@ -57,11 +57,9 @@ public class Client {
             if (params.length == 2) {
                 var number =  Integer.parseInt(params[0]) - 1;
                 GameData game = games.get(number);
-                System.out.println(params[1].toUpperCase());
                 server.joinGame(new JoinGameData(params[1].toUpperCase(), game.gameID()), authData.authToken());
 
-//                printGame(game);
-                return "";
+                return gameToString(game);
             } else {
                 throw new ClientException(400, "Expected: <GameNumber> <Color>");
             }
@@ -167,6 +165,57 @@ public class Client {
 
     private void throwLoggedOut() throws Exception {
         throw new ClientException(400, "Logged out, cannot perform command.");
+    }
+
+    private String gameToString(GameData gameData) throws Exception {
+        StringBuilder gameString = new StringBuilder();
+        StringBuilder spacer = new StringBuilder();
+        ChessGame game = gameData.game();
+        System.out.println(game.getBoard().getPiece(new ChessPosition(1, 1)));
+        System.out.println(game.getBoard().getPiece(new ChessPosition(3, 1)));
+
+        for (int i = 0; i < 10; i++) {
+            if (i == 0 || i == 9) {
+                gameString.append(SET_BG_COLOR_DARK_GREY
+                        +  SET_TEXT_COLOR_WHITE
+                        + "    h  g  f  e  d  c  b  a    "
+                        + RESET_BG_COLOR + "\n");
+            } else if (i % 2 != 0) {
+                for (int j = 0; j < 10; j++) {
+                    if (j == 0 || j == 9) {
+                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
+                                            append(i).append(" ").append(RESET_BG_COLOR);
+                    } else if (j % 2 != 0) {
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY + "   ");
+                    } else {
+                        gameString.append(SET_BG_COLOR_BLACK + "   ");
+                    }
+                }
+                gameString.append("\n");
+            } else {
+                for (int j = 0; j < 10; j++) {
+                    if (j == 0 || j == 9) {
+                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
+                                append(i).append(" ").append(RESET_BG_COLOR);
+                    } else if (j % 2 != 0) {
+                        gameString.append(SET_BG_COLOR_BLACK + "   ");
+                    } else {
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY + "   ");
+                    }
+                }
+                gameString.append("\n");
+            }
+        }
+
+        spacer.append(SET_BG_COLOR_BLACK
+                + "                              "
+                + RESET_BG_COLOR
+                + "\n");
+
+        String board = gameString.toString();
+        String blackSpacer = spacer.toString();
+
+        return board + blackSpacer + board;
     }
 
     public String help() {
