@@ -4,8 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import chess.ChessGame;
-import chess.ChessPosition;
+import chess.*;
 import com.google.gson.Gson;
 import model.*;
 import server.ServerFacade;
@@ -16,6 +15,7 @@ import static java.util.Objects.isNull;
 public class Client {
     private AuthData authData;
     private List<GameData> games;
+    StringBuilder gameString;
     private final ServerFacade server;
     private final String serverUrl;
     private final NotificationHandler notificationHandler;
@@ -168,17 +168,16 @@ public class Client {
     }
 
     private String gameToString(GameData gameData) throws Exception {
-        StringBuilder gameString = new StringBuilder();
+        gameString = new StringBuilder();
         StringBuilder spacer = new StringBuilder();
         ChessGame game = gameData.game();
-        System.out.println(game.getBoard().getPiece(new ChessPosition(1, 1)));
-        System.out.println(game.getBoard().getPiece(new ChessPosition(3, 1)));
+        ChessBoard board = game.getBoard();
 
         for (int i = 0; i < 10; i++) {
             if (i == 0 || i == 9) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
                         +  SET_TEXT_COLOR_WHITE
-                        + "    h  g  f  e  d  c  b  a    "
+                        + "    h   g   f  e   d   c  b   a    "
                         + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
                 for (int j = 0; j < 10; j++) {
@@ -186,9 +185,11 @@ public class Client {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
                                             append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY + "   ");
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        addPiece(board, i, j);
                     } else {
-                        gameString.append(SET_BG_COLOR_BLACK + "   ");
+                        gameString.append(SET_BG_COLOR_BLACK);
+                        addPiece(board, i, j);
                     }
                 }
                 gameString.append("\n");
@@ -198,9 +199,11 @@ public class Client {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
                                 append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_BLACK + "   ");
+                        gameString.append(SET_BG_COLOR_BLACK);
+                        addPiece(board, i, j);
                     } else {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY + "   ");
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        addPiece(board, i, j);
                     }
                 }
                 gameString.append("\n");
@@ -208,14 +211,60 @@ public class Client {
         }
 
         spacer.append(SET_BG_COLOR_BLACK
-                + "                              "
+                + "                                   "
                 + RESET_BG_COLOR
                 + "\n");
 
-        String board = gameString.toString();
+        String theBoard = gameString.toString();
         String blackSpacer = spacer.toString();
 
-        return board + blackSpacer + board;
+        return theBoard + blackSpacer + theBoard;
+    }
+
+    private void addPiece(ChessBoard board, int i, int j) {
+        if (board.getPiece(new ChessPosition(i, j)) == null) {
+            gameString.append(EMPTY);
+        } else {
+            ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+            switch(piece.type) {
+                case KING -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_KING);
+                        case BLACK -> gameString.append(BLACK_KING);
+                    }
+                }
+                case QUEEN -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_QUEEN);
+                        case BLACK -> gameString.append(BLACK_QUEEN);
+                    }
+                }
+                case ROOK -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_ROOK);
+                        case BLACK -> gameString.append(BLACK_ROOK);
+                    }
+                }
+                case BISHOP -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_BISHOP);
+                        case BLACK -> gameString.append(BLACK_BISHOP);
+                    }
+                }
+                case KNIGHT -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_KNIGHT);
+                        case BLACK -> gameString.append(BLACK_KNIGHT);
+                    }
+                }
+                case PAWN -> {
+                    switch (piece.pieceColor) {
+                        case WHITE -> gameString.append(WHITE_PAWN);
+                        case BLACK -> gameString.append(BLACK_PAWN);
+                    }
+                }
+            }
+        }
     }
 
     public String help() {
