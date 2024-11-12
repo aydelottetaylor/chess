@@ -169,10 +169,22 @@ public class Client {
 
     private String gameToString(GameData gameData) throws Exception {
         gameString = new StringBuilder();
-        StringBuilder spacer = new StringBuilder();
         ChessGame game = gameData.game();
         ChessBoard board = game.getBoard();
+        buildBoard(board);
+        buildBackwardsBoard(board);
 
+
+        gameString.append(SET_BG_COLOR_BLACK
+                + "                                   "
+                + RESET_BG_COLOR
+                + "\n");
+        String theBoard = gameString.toString();
+
+        return theBoard;
+    }
+
+    private void buildBoard(ChessBoard board) {
         for (int i = 0; i < 10; i++) {
             if (i == 0 || i == 9) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
@@ -183,7 +195,7 @@ public class Client {
                 for (int j = 0; j < 10; j++) {
                     if (j == 0 || j == 9) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                            append(i).append(" ").append(RESET_BG_COLOR);
+                                append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, j);
@@ -209,16 +221,10 @@ public class Client {
                 gameString.append("\n");
             }
         }
+    }
 
-        spacer.append(SET_BG_COLOR_BLACK
-                + "                                   "
-                + RESET_BG_COLOR
-                + "\n");
-
-        String theBoard = gameString.toString();
-        String blackSpacer = spacer.toString();
-
-        return theBoard + blackSpacer + theBoard;
+    public void buildBackwardsBoard(ChessBoard board) {
+        
     }
 
     private void addPiece(ChessBoard board, int i, int j) {
