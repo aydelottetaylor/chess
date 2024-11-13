@@ -68,7 +68,7 @@ public class Server {
     private void serviceExceptionHandler(ServiceException ex, Request req, Response res) {
          res.status(ex.statusCode());
          res.body(serializer.toJson(Map.of("message", ex.getMessage())));
-     }
+    }
 
     // Register a new user, does not require authentication, requires username, password, and email
     private Object registerUser(Request req, Response res) throws Exception {

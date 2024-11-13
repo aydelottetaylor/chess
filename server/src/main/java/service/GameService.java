@@ -51,20 +51,20 @@ public class GameService {
         userService.authorizeUser(authToken);
         // Check color is black or white and that game exists
         if (!Objects.equals(gameData.playerColor(), "WHITE") && !Objects.equals(gameData.playerColor(), "BLACK")) {
-            throw new ServiceException(400, "Error: bad request");
+            throw new ServiceException(400, "Error: Color must be 'WHITE' or 'BLACK'");
         } else if (gameData.gameID() == null || Objects.equals(gameDataAccess.getGameById(gameData.gameID()), null)) {
-            throw new ServiceException(400, "Error: bad request");
+            throw new ServiceException(400, "Error: Bad game ID");
         }
 
         // Check if color is already taken
         GameData game = gameDataAccess.getGameById(gameData.gameID());
         if (Objects.equals(gameData.playerColor(), "WHITE")) {
             if(!Objects.equals(game.whiteUsername(), "")) {
-                throw new ServiceException(403, "Error: already taken");
+                throw new ServiceException(403, "Error: color already taken");
             }
         } else {
             if(!Objects.equals(game.blackUsername(), "")) {
-                throw new ServiceException(403, "Error: already taken");
+                throw new ServiceException(403, "Error: color already taken");
             }
         }
 

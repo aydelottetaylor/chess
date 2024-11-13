@@ -132,7 +132,7 @@ public class UserServiceTests {
             Collection<AuthData> auths = getAllAuths();
 
             assertEquals(401, exception.statusCode());
-            assertEquals("Error: unauthorized, no matching user registered", exception.getMessage());
+            assertEquals("Error: Unauthorized, no matching user registered", exception.getMessage());
             assertTrue(auths.isEmpty());
         }
 
@@ -149,7 +149,7 @@ public class UserServiceTests {
             Collection<AuthData> auths = getAllAuths();
 
             assertEquals(401, exception.statusCode());
-            assertEquals("Error: unauthorized, wrong password", exception.getMessage());
+            assertEquals("Error: Unauthorized, wrong password", exception.getMessage());
             assertTrue(auths.isEmpty());
         }
     }
@@ -178,7 +178,7 @@ public class UserServiceTests {
         });
 
         assertEquals(401, exception.statusCode());
-        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals("Error: Unauthorized", exception.getMessage());
     }
 
     @Test
@@ -200,7 +200,7 @@ public class UserServiceTests {
         });
 
         assertEquals(401, exception.statusCode());
-        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals("Error: Unauthorized", exception.getMessage());
     }
 
     @Test

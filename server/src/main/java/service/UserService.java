@@ -26,7 +26,7 @@ public class UserService {
             }
 
             if (userDataAccess.getUser(newUser.username()) != null) {
-                throw new ServiceException(403, "Error: already taken");
+                throw new ServiceException(403, "Error: Username already taken");
             } else {
                 userDataAccess.addUser(newUser, BCrypt.hashpw(newUser.password(), BCrypt.gensalt()));
                 authDataAccess.addAuthToken(newUser.username(), generateAuthToken());
@@ -40,14 +40,14 @@ public class UserService {
     public AuthData loginUser(UserData userInfo) throws Exception {
         UserData user = userDataAccess.getUser(userInfo.username());
         if (user == null) {
-            throw new ServiceException(401, "Error: unauthorized, no matching user registered");
+            throw new ServiceException(401, "Error: Unauthorized, no matching user registered");
         }
         if (BCrypt.checkpw(userInfo.password(), user.password())) {
             String token = generateAuthToken();
             authDataAccess.addAuthToken(userInfo.username(), token);
             return new AuthData(userInfo.username(), token);
         } else {
-            throw new ServiceException(401, "Error: unauthorized, wrong password");
+            throw new ServiceException(401, "Error: Unauthorized, wrong password");
         }
     }
 
@@ -61,7 +61,7 @@ public class UserService {
     public void authorizeUser(String authToken) throws Exception {
         AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
         if (auth == null) {
-            throw new ServiceException(401, "Error: unauthorized");
+            throw new ServiceException(401, "Error: Unauthorized");
         }
     }
 

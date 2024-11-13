@@ -1,0 +1,6 @@
+Nov 09, 2024 6:29:33 PM server.ServerFacade logToFile
+WARNING: Bad Gateway
+Nov 09, 2024 6:35:14 PM server.ServerFacade logToFile
+WARNING: Bad Gateway
+Nov 09, 2024 6:39:04 PM server.ServerFacade logToFile
+WARNING: Bad Gateway

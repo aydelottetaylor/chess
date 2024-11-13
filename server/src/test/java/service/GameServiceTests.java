@@ -66,7 +66,7 @@ public class GameServiceTests {
                gameService.createGame(newGame, null);
             });
             assertEquals(401, exception.statusCode());
-            assertEquals("Error: unauthorized", exception.getMessage());
+            assertEquals("Error: Unauthorized", exception.getMessage());
         }
 
         @Test
@@ -185,7 +185,7 @@ public class GameServiceTests {
         });
 
         assertEquals(401, exception.statusCode());
-        assertEquals("Error: unauthorized", exception.getMessage());
+        assertEquals("Error: Unauthorized", exception.getMessage());
     }
 
     @Test
@@ -248,7 +248,7 @@ public class GameServiceTests {
             });
 
             assertEquals(401, exception.statusCode());
-            assertEquals("Error: unauthorized", exception.getMessage());
+            assertEquals("Error: Unauthorized", exception.getMessage());
         }
 
         @Test
