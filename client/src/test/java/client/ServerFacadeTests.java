@@ -3,10 +3,9 @@ package client;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.*;
-import service.ServiceException;
-import ui.Client;
 
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -137,12 +136,39 @@ public class ServerFacadeTests {
     @Test
     @DisplayName("Fetch All Games - Positive")
     public void testFetchAllGames() throws Exception {
+        UserData user = new UserData("username", "password", "email");
+        AuthData auth = serverFacade.registerUser(user);
 
+        serverFacade.createGame(new GameData(0, null, null, "gameName", null), auth.authToken());
+        serverFacade.createGame(new GameData(0, null, null, "gameName1", null), auth.authToken());
+        serverFacade.createGame(new GameData(0, null, null, "gameName2", null), auth.authToken());
+
+        List<GameData> games = serverFacade.fetchAllGames(auth.authToken());
+
+        assertTrue(games.size() == 3);
+        assertTrue(Objects.equals(games.getFirst().gameName(), "gameName"));
+        assertTrue(Objects.equals(games.getLast().gameName(), "gameName2"));
     }
 
+    @Test
+    @DisplayName("Fetch All Games - Negative")
+    public void testFetchAllGamesNegative() throws Exception {
+        UserData user = new UserData("username", "password", "email");
+        AuthData auth = serverFacade.registerUser(user);
 
+        serverFacade.createGame(new GameData(0, null, null, "gameName", null), auth.authToken());
+        serverFacade.createGame(new GameData(0, null, null, "gameName1", null), auth.authToken());
+        serverFacade.createGame(new GameData(0, null, null, "gameName2", null), auth.authToken());
 
+        ServerFacadeException exception = assertThrows(ServerFacadeException.class, () -> {
+            serverFacade.fetchAllGames("fakeauthtoken");
+        });
 
+        assertEquals(500, exception.statusCode());
+        assertEquals("Error: Unauthorized", exception.getMessage());
+    }
+
+    
 
 
 }

@@ -1,24 +1,15 @@
 package server;
 
-import com.google.gson.reflect.TypeToken;
 import model.*;
 import com.google.gson.*;
-import org.junit.jupiter.api.DisplayNameGenerator;
-
-import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URI;
-import java.util.logging.*;
 
 public class ServerFacade {
     private final String serverUrl;
-    private static final Logger logger = Logger.getLogger("Server exception logs.");
-    private static FileHandler fileHandler;
 
     public ServerFacade(String url) {
         serverUrl = url;

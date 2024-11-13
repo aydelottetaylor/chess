@@ -2,11 +2,9 @@ package ui;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import chess.*;
-import com.google.gson.Gson;
 import model.*;
 import server.ServerFacade;
 import ui.websocket.*;
@@ -20,7 +18,6 @@ public class Client {
     private final ServerFacade server;
     private final String serverUrl;
     private final NotificationHandler notificationHandler;
-    private WebSocketFacade ws;
     private State state = State.SIGNED_OUT;
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
