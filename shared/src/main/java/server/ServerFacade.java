@@ -15,37 +15,44 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+//    Takes user data and registers user, gives back auth data
     public AuthData registerUser(UserData user) throws ServerFacadeException {
         var path = "/user";
         return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
+//    Takes user data and logs in user. gives back auth data
     public AuthData loginUser(UserData user) throws ServerFacadeException {
         var path = "/session";
         return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
+//    Takes authtoken and logs out user, does not return
     public void logoutUser(String authToken) throws ServerFacadeException {
         var path = "/session";
         this.makeRequest("DELETE", path, null, null, authToken);
     }
 
+//    Takes Game Data and authtoken and creates game, sends back game data
     public Object createGame(GameData game, String authToken) throws ServerFacadeException {
         var path = "/game";
         return this.makeRequest("POST", path, game, Object.class, authToken);
     }
 
+//    Takes authtoken and returns a list of Games
     public List<GameData> fetchAllGames(String authToken) throws ServerFacadeException {
         var path = "/game";
         GameResponse gameResponse = this.makeRequest("GET", path, null, GameResponse.class, authToken);
         return gameResponse.getGames();
     }
 
+//    Takes JoinGameData and authtoken, joins user to game as requested color and returns nothing
     public void joinGame(JoinGameData game, String authToken) throws ServerFacadeException {
         var path = "/game";
         this.makeRequest("PUT", path, game, null, authToken);
     }
 
+//    Takes nothing and returns nothing, clears database
     public void clear() throws ServerFacadeException {
         var path = "/db";
         this.makeRequest("DELETE", path, null, null, null);
