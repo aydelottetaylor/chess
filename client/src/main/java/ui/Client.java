@@ -80,10 +80,16 @@ public class Client {
             if (isNull(this.games)) {
                 throw new ClientException(400, "Make sure to check all games by using 'listGames' first!");
             }
-            if(Integer.parseInt(params[0]) > games.size()) {
+            int gameNumber = 0;
+            try {
+                gameNumber = Integer.parseInt(params[0]);
+            } catch (Exception ex) {
+                throw new ClientException(400, "Number not given for GameNumber.");
+            }
+            if(gameNumber > games.size()) {
                 throw new ClientException(400, "Incorrect game number. Please check the game number and try again.");
             }
-            var number =  Integer.parseInt(params[0]) - 1;
+            var number =  gameNumber - 1;
             GameData game = games.get(number);
             return gameToString(game);
         } else {
@@ -151,12 +157,12 @@ public class Client {
     }
 
     public String loginUser(String... params) throws Exception {
-        if (params.length == 2) {
-            if(authData != null) {
-                if (Objects.equals(params[0], authData.username())) {
-                    throw new ClientException(400, "Already logged in!!");
-                }
+        if(authData != null) {
+            if (Objects.equals(params[0], authData.username())) {
+                throw new ClientException(400, "Already logged in!!");
             }
+        }
+        if (params.length == 2) {
             UserData user = new UserData(params[0], params[1], null);
             AuthData auth;
             try {
@@ -178,6 +184,7 @@ public class Client {
             try {
                 server.logoutUser(authData.authToken());
                 state = State.SIGNED_OUT;
+                authData = null;
                 return "Logged out successfully!";
             } catch (Exception ex) {
                 throw new ClientException(500, ex.getMessage());
