@@ -168,7 +168,36 @@ public class ServerFacadeTests {
         assertEquals("Error: Unauthorized", exception.getMessage());
     }
 
-    
+    @Test
+    @DisplayName("Join Game - Positive")
+    public void testJoinGamePositive() throws Exception {
+        UserData user = new UserData("username", "password", "email");
+        AuthData auth = serverFacade.registerUser(user);
+
+        serverFacade.createGame(new GameData(0, null, null, "gameName", null), auth.authToken());
+        serverFacade.joinGame(new JoinGameData("WHITE", 1), auth.authToken());
+
+        List<GameData> games = serverFacade.fetchAllGames(auth.authToken());
+        GameData game = games.get(0);
+        assertEquals(game.gameName(), "gameName");
+        assertEquals(game.whiteUsername(), "username");
+    }
+
+    @Test
+    @DisplayName("Join Game - Negative")
+    public void testJoinGameNegative() throws Exception {
+        UserData user = new UserData("username", "password", "email");
+        AuthData auth = serverFacade.registerUser(user);
+
+        serverFacade.createGame(new GameData(0, null, null, "gameName", null), auth.authToken());
+
+        ServerFacadeException exception = assertThrows(ServerFacadeException.class, () -> {
+            serverFacade.joinGame(new JoinGameData("WHIT", 1), auth.authToken());
+        });
+
+        assertEquals(500, exception.statusCode());
+        assertEquals("Error: Color must be 'WHITE' or 'BLACK'", exception.getMessage());
+    }
 
 
 }
