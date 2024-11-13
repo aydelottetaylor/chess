@@ -99,7 +99,9 @@ public class ServerFacade {
     }
 
     private String readStream(InputStream stream) throws IOException {
-        if (stream == null) return ""; // Handle cases where the stream might be null
+        if (stream == null) { // Handle cases where the stream might be null
+            return "";
+        }
 
         StringBuilder response = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
