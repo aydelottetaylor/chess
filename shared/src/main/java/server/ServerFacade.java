@@ -39,9 +39,9 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, authToken);
     }
 
-    public void createGame(GameData game, String authToken) throws ServerFacadeException {
+    public Object createGame(GameData game, String authToken) throws ServerFacadeException {
         var path = "/game";
-        this.makeRequest("POST", path, game, null, authToken);
+        return this.makeRequest("POST", path, game, Object.class, authToken);
     }
 
     public List<GameData> fetchAllGames(String authToken) throws ServerFacadeException {
@@ -53,6 +53,11 @@ public class ServerFacade {
     public void joinGame(JoinGameData game, String authToken) throws ServerFacadeException {
         var path = "/game";
         this.makeRequest("PUT", path, game, null, authToken);
+    }
+
+    public void clear() throws ServerFacadeException {
+        var path = "/db";
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, String authToken) throws ServerFacadeException {

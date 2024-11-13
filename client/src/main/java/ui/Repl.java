@@ -26,7 +26,7 @@ public class Repl implements NotificationHandler {
 
             try {
                 result = client.eval(line);
-                System.out.print(SET_TEXT_COLOR_GREEN+ result);
+                System.out.print(SET_TEXT_COLOR_GREEN+ result.replace("Error: ", ""));
             } catch (Throwable e) {
                 var msg = e.getMessage();
                 System.out.print(SET_TEXT_COLOR_RED + msg);
