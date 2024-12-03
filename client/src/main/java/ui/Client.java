@@ -108,8 +108,11 @@ public class Client {
                     GameData game = games.get(i);
                     result.append(i + 1)
                             .append(": ").append(game.gameName())
+                            .append(", White Player: ").append(game.whiteUsername() == null ? "None" : game.whiteUsername())
+                            .append(", Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername())
                             .append("\n");
                 }
+                result.append("\nIf a player is 'none' on a game, game is joinable with that user.");
                 return result.toString();
             } catch (Exception ex) {
                 return ex.toString();
