@@ -18,6 +18,7 @@ public class Client {
     private final ServerFacade server;
     private final String serverUrl;
     private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     private State state = State.SIGNED_OUT;
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
@@ -65,7 +66,10 @@ public class Client {
                 var number =  gameNumber - 1;
                 GameData game = games.get(number);
                 server.joinGame(new JoinGameData(params[1].toUpperCase(), game.gameID()), authData.authToken());
-                return gameToString(game);
+                state = State.IN_GAME;
+                ws = new WebSocketFacade(serverUrl, notificationHandler);
+                ws.joinGame(authData, number);
+                return gameToString(game, params[1].toUpperCase());
             } else {
                 throw new ClientException(400, "Expected: <GameNumber> <Color>");
             }
@@ -91,7 +95,9 @@ public class Client {
             }
             var number =  gameNumber - 1;
             GameData game = games.get(number);
-            return gameToString(game);
+            state = State.IN_GAME;
+//            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            return gameToString(game, "WHITE");
         } else {
             throwLoggedOut();
             return "";
@@ -205,19 +211,16 @@ public class Client {
         throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
-    private String gameToString(GameData gameData) throws Exception {
+    private String gameToString(GameData gameData, String color) throws Exception {
         gameString = new StringBuilder();
         ChessGame game = gameData.game();
         ChessBoard board = game.getBoard();
 
-        buildBoard(board);
-
-        gameString.append(SET_BG_COLOR_BLACK
-                + "                                   "
-                + RESET_BG_COLOR
-                + "\n");
-
-        buildBackwardsBoard(board);
+        if(Objects.equals(color, "WHITE")) {
+            buildBoard(board);
+        } else if (Objects.equals(color, "BLACK")) {
+            buildBackwardsBoard(board);
+        }
 
         return gameString.toString();
     }
@@ -354,6 +357,15 @@ public class Client {
                     - login <Username> <Password> - to play chess
                     - quit - to exit
                     - help - get possible commands
+                    """;
+        } else if (state == State.IN_GAME) {
+            return """
+                    You can use one of the following commands:
+                    - redrawBoard - redraws the chess board
+                    - leave - leave the game you are playing or observing
+                    - makeMove <starting position> <ending position> - make a move
+                    - resign - resign and forfeit game
+                    - highlightMoves <position> - highlight the legal moves for a piece at a certain position
                     """;
         }
         return """
