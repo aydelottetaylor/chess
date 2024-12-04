@@ -32,7 +32,7 @@ public class WebSocketHandler {
 
         switch (action.getCommandType()) {
             case CONNECT -> connectGame(action.getAuthToken(), action.getGameID(), session);
-            case MAKE_MOVE -> makeMove("temp");
+            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
             case LEAVE -> leaveGame(action.getAuthToken(), action.getGameID(), session);
             case RESIGN -> resignGame(action.getAuthToken(), action.getGameID(), session);
         }

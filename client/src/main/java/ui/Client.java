@@ -59,7 +59,7 @@ public class Client {
 
     public String makeMove(String ... params) throws Exception {
         if (state == State.IN_GAME) {
-            if (params.length == 2) {
+            if (params.length >= 2) {
                 // Get positions
                 String start = params[0];
                 String end = params[1];
@@ -68,11 +68,25 @@ public class Client {
                 int endcol = (end.charAt(0) - 'a') + 1;
                 int endrow = end.charAt(1) - '0';
 
+                ChessPiece.PieceType type = null;
+                if (params.length == 3) {
+                    switch (params[2]) {
+                        case "queen" -> type = ChessPiece.PieceType.QUEEN;
+                        case "knight" -> type = ChessPiece.PieceType.KNIGHT;
+                        case "bishop" -> type = ChessPiece.PieceType.BISHOP;
+                        case "rook" -> type = ChessPiece.PieceType.ROOK;
+                    }
+                }
 
+                ChessPosition startPosition = new ChessPosition(startrow, startcol);
+                ChessPosition endPosition = new ChessPosition(endrow, endcol);
+                ChessMove move = new ChessMove(startPosition, endPosition, type);
+
+                ws.makeMove(authData, currentGame.gameID(), move);
 
                 return "";
             } else {
-                throw new ClientException(400, "Expected: makeMove <starting position> <ending position>");
+                throw new ClientException(400, "Expected: makeMove <starting position> <ending position> <promotionpiece>");
             }
         } else {
             throw new ClientException(400, "Not in game, cannot make a move");
@@ -444,7 +458,9 @@ public class Client {
                     You can use one of the following commands:
                     - redrawBoard - redraws the chess board
                     - leave - leave the game you are playing or observing
-                    - makeMove <starting position> <ending position> - make a move
+                    - makeMove <starting position> <ending position> <promotion piece> - make a move
+                                            for <promotion piece> put piece you want pawn to be if getting promoted
+                                            if not getting promoted leave blank
                     - resign - resign and forfeit game
                     - highlightMoves <position> - highlight the legal moves for a piece at a certain position
                     """;
