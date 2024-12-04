@@ -15,6 +15,7 @@ import websocket.messages.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Objects;
 import java.util.Timer;
 
 import static websocket.commands.UserGameCommand.CommandType.*;
@@ -110,7 +111,43 @@ public class WebSocketHandler {
                 connections.sendErrorMessageNoAuth(message, session);
             } else {
                 GameData game = gameDataAccess.getGameById(gameId);
+                ChessPosition start = move.getStartPosition();
                 ChessGame chessGame = game.getGame();
+                ChessBoard board = chessGame.getBoard();
+
+                if (board.getPiece(start).pieceColor == ChessGame.TeamColor.BLACK) {
+                    if (!Objects.equals(auth.username(), game.blackUsername())) {
+                        var message = String.format("ERROR: Cannot make move for other color or as observer");
+                        var notification = new ErrorMessage(message);
+                        connections.sendErrorMessage(notification, authToken);
+                        return;
+                    }
+                } else if (board.getPiece(start).pieceColor == ChessGame.TeamColor.WHITE) {
+                    if (!Objects.equals(auth.username(), game.whiteUsername())) {
+                        var message = String.format("ERROR: Cannot make move for other color or as observer");
+                        var notification = new ErrorMessage(message);
+                        connections.sendErrorMessage(notification, authToken);
+                        return;
+                    }
+                }
+
+                if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                    var message = String.format("ERROR: Cannot make move, %s is checkmate!", game.blackUsername());
+                    var notification = new ErrorMessage(message);
+                    connections.sendErrorMessage(notification, authToken);
+                    return;
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    var message = String.format("ERROR: Cannot make move, %s is checkmate!", game.whiteUsername());
+                    var notification = new ErrorMessage(message);
+                    connections.sendErrorMessage(notification, authToken);
+                    return;
+                } else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                    var message = String.format("ERROR: Cannot make move, is in stalemate!");
+                    var notification = new ErrorMessage(message);
+                    connections.sendErrorMessage(notification, authToken);
+                    return;
+                }
+
                 chessGame.makeMove(move);
 
                 GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
@@ -150,7 +187,9 @@ public class WebSocketHandler {
 
     private void resignGame(String authToken, Integer gameId, Session session) throws ServerException {
         try {
+            GameData game = gameDataAccess.getGameById(gameId);
             UserData user = userService.getUserOnAuthToken(authToken);
+            
             var message = String.format("User %s has resigned!", user.getUsername());
             var notification = new NotificationMessage(message);
             connections.broadcast(gameId, notification, null);
