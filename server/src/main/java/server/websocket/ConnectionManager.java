@@ -39,6 +39,26 @@ public class ConnectionManager {
         }
     }
 
+    public void broadcastGame(LoadGameMessage message, Integer gameId) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        Gson gson = new Gson();
+
+        for (var c : connections.values()) {
+            if (c.session.isOpen()) {
+                if (c.gameId.equals(gameId)) {
+                    String jsonNotification = gson.toJson(message);
+                    c.send(jsonNotification);
+                }
+            } else {
+                removeList.add(c);
+            }
+        }
+
+        for (var c : removeList) {
+            connections.remove(c.authToken);
+        }
+    }
+
     public void broadcast(Integer gameId, ServerMessage notification, String authToken) throws IOException {
         var removeList = new ArrayList<Connection>();
         Gson gson = new Gson();

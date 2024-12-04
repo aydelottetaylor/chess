@@ -104,13 +104,31 @@ public class WebSocketHandler {
 
     private void makeMove(String authToken, Integer gameId, ChessMove move) throws ServerException {
         try {
+            AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
+            if (auth == null) {
+                var message = String.format("ERROR: Invalid auth token ");
+                var notification = new ErrorMessage(message);
+                connections.sendErrorMessage(notification, authToken);
+            }
+
             GameData game = gameDataAccess.getGameById(gameId);
-            System.out.println(game);
+            System.out.println(move);
             ChessGame chessGame = game.getGame();
+            System.out.println(chessGame.getBoard().getPiece(move.getStartPosition()));
             chessGame.makeMove(move);
 
+            GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
+            gameDataAccess.setGameById(gameId, newGame);
 
+            game = gameDataAccess.getGameById(gameId);
 
+            var gameNotification = new LoadGameMessage(game);
+            connections.broadcastGame(gameNotification, gameId);
+
+            UserData user = userService.getUserOnAuthToken(authToken);
+            var message = String.format("User %s has made their move.", user.getUsername());
+            var notification = new NotificationMessage(message);
+            connections.broadcast(gameId, notification, authToken);
         } catch (Exception ex) {
             try {
                 var notification = new ErrorMessage(ex.getMessage());

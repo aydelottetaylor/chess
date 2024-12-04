@@ -208,7 +208,7 @@ public class Client {
                             .append(", Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername())
                             .append("\n");
                 }
-                result.append("\nIf a player is 'None' on a game, game is joinable with that user.");
+                result.append("\nIf a color's player is 'None' on a game, game is joinable with that color.");
                 return result.toString();
             } catch (Exception ex) {
                 return ex.toString();
@@ -311,9 +311,9 @@ public class Client {
         ChessBoard board = game.getBoard();
 
         if(Objects.equals(color, "WHITE")) {
-            buildBoard(board);
-        } else if (Objects.equals(color, "BLACK")) {
             buildBackwardsBoard(board);
+        } else if (Objects.equals(color, "BLACK")) {
+            buildBoard(board);
         }
 
         return gameString.toString();
@@ -324,32 +324,32 @@ public class Client {
             if (i == 0 || i == 9) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
                         +  SET_TEXT_COLOR_WHITE
-                        + "    a   b   c  d   e   f  g   h    "
+                        + "    h   g   f  e   d   c  b   a    "
                         + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
-                for (int j = 0; j < 10; j++) {
+                for (int j = 9; j >= 0; j--) {
                     if (j == 0 || j == 9) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                append(9 - i).append(" ").append(RESET_BG_COLOR);
+                                append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, j);
                     } else {
-                        gameString.append(SET_BG_COLOR_BLACK);
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, j);
                     }
                 }
                 gameString.append("\n");
             } else {
-                for (int k = 0; k < 10; k++) {
+                for (int k = 9; k >= 0; k--) {
                     if (k == 0 || k == 9) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                append(9 - i).append(" ").append(RESET_BG_COLOR);
+                                append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_BLACK);
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, k);
                     } else {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, k);
                     }
                 }
@@ -364,32 +364,32 @@ public class Client {
                 gameString.append(SET_BG_COLOR_DARK_GREY
                         + SET_TEXT_COLOR_WHITE
 
-                        + "    h   g   f  e   d   c  b   a    " // Columns are in reverse order
+                        + "    a   b   c  d   e   f  g   h    " // Columns are in reverse order
                         + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
-                for (int j = 9; j >= 0; j--) { // Loop backwards for columns
+                for (int j = 0; j < 10; j++) { // Loop backwards for columns
                     if (j == 9 || j == 0) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
-                                .append(9 - i).append(" ").append(RESET_BG_COLOR);
+                                .append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, j);
                     } else {
-                        gameString.append(SET_BG_COLOR_BLACK);
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, j);
                     }
                 }
                 gameString.append("\n");
             } else {
-                for (int k = 9; k >= 0; k--) { // Loop backwards for columns
+                for (int k = 0; k < 10; k++) { // Loop backwards for columns
                     if (k == 9 || k == 0) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
-                                .append(9 - i).append(" ").append(RESET_BG_COLOR);
+                                .append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
-                        gameString.append(SET_BG_COLOR_BLACK);
+                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, k);
                     } else {
-                        gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, k);
                     }
                 }
@@ -406,38 +406,38 @@ public class Client {
             switch(piece.type) {
                 case KING -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_KING);
-                        case BLACK -> gameString.append(BLACK_KING);
+                        case BLACK -> gameString.append(WHITE_KING);
+                        case WHITE -> gameString.append(BLACK_KING);
                     }
                 }
                 case QUEEN -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_QUEEN);
-                        case BLACK -> gameString.append(BLACK_QUEEN);
+                        case BLACK -> gameString.append(WHITE_QUEEN);
+                        case WHITE -> gameString.append(BLACK_QUEEN);
                     }
                 }
                 case ROOK -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_ROOK);
-                        case BLACK -> gameString.append(BLACK_ROOK);
+                        case BLACK -> gameString.append(WHITE_ROOK);
+                        case WHITE -> gameString.append(BLACK_ROOK);
                     }
                 }
                 case BISHOP -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_BISHOP);
-                        case BLACK -> gameString.append(BLACK_BISHOP);
+                        case BLACK -> gameString.append(WHITE_BISHOP);
+                        case WHITE -> gameString.append(BLACK_BISHOP);
                     }
                 }
                 case KNIGHT -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_KNIGHT);
-                        case BLACK -> gameString.append(BLACK_KNIGHT);
+                        case BLACK -> gameString.append(WHITE_KNIGHT);
+                        case WHITE -> gameString.append(BLACK_KNIGHT);
                     }
                 }
                 case PAWN -> {
                     switch (piece.pieceColor) {
-                        case WHITE -> gameString.append(WHITE_PAWN);
-                        case BLACK -> gameString.append(BLACK_PAWN);
+                        case BLACK -> gameString.append(WHITE_PAWN);
+                        case WHITE -> gameString.append(BLACK_PAWN);
                     }
                 }
             }

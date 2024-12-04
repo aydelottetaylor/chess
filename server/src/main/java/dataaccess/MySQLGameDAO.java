@@ -105,6 +105,16 @@ public class MySQLGameDAO implements GameDataAccess {
         return Map.of("games", gameList);
     }
 
+    public void setGameById(Integer gameId, GameData game) throws Exception {
+        try {
+            var statement = "UPDATE games SET game = ? WHERE gameid = ?";
+            var json = new Gson().toJson(game.getGame());
+            DatabaseManager.executeUpdate(statement, json, gameId);
+        } catch (Exception e) {
+            throw new DataAccessException(500, e.getMessage());
+        }
+    }
+
     // Add user to specified game by gameId
     public void addUserToGame(String username, JoinGameData gameData) throws Exception {
         try {
