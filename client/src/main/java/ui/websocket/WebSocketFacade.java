@@ -62,17 +62,46 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void joinGame(AuthData authData, int game) throws WebSocketException {
+    public void joinGame(AuthData authData, Integer gameId) throws WebSocketException {
         try {
             if (this.session == null || !this.session.isOpen()) {
                 throw new IllegalStateException("WebSocket session is not open");
             }
-            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData.authToken(), game);
+            var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authData.authToken(), gameId);
             Gson gson = new Gson();
             String payload = gson.toJson(action);
             this.session.getBasicRemote().sendText(payload);
         } catch (IOException ex) {
             throw new WebSocketException(500, "Failed to send join game command");
+        }
+    }
+
+    public void leaveGame(AuthData authData, Integer gameId) throws WebSocketException {
+        try {
+            if (this.session == null || !this.session.isOpen()) {
+                throw new IllegalStateException("WebSocket session is not open");
+            }
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authData.authToken(), gameId);
+            Gson gson = new Gson();
+            String payload = gson.toJson(action);
+            this.session.getBasicRemote().sendText(payload);
+            this.session.close();
+        } catch (IOException ex) {
+            throw new WebSocketException(500, "Failed to send leave game command");
+        }
+    }
+
+    public void resignGame(AuthData authData, Integer gameId) throws WebSocketException {
+        try {
+            if (this.session == null || !this.session.isOpen()) {
+                throw new IllegalStateException("WebSocket session is not open");
+            }
+            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authData.authToken(), gameId);
+            Gson gson = new Gson();
+            String payload = gson.toJson(action);
+            this.session.getBasicRemote().sendText(payload);
+        } catch (IOException ex) {
+            throw new WebSocketException(500, "Failed to send resign game command");
         }
     }
 }

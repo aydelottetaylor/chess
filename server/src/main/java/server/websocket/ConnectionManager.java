@@ -2,10 +2,11 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ServerMessage;
+import websocket.messages.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
@@ -16,18 +17,35 @@ public class ConnectionManager {
         connections.put(authToken, connection);
     }
 
-    public void remove(Integer gameId) {
-        connections.remove(gameId);
+    public void remove(String authToken) {
+        connections.remove(authToken);
     }
 
-    public void broadcast(Integer gameId, ServerMessage notification) throws IOException {
+    public void sendGame(LoadGameMessage message, String authToken) throws IOException {
+        var connection = connections.get(authToken);
+        if (connection != null) {
+            Gson gson = new Gson();
+            String jsonNotification = gson.toJson(message);
+            connection.send(jsonNotification);
+        }
+    }
+
+    public void sendErrorMessage(ErrorMessage message, String authToken) throws IOException {
+        var connection = connections.get(authToken);
+        if (connection != null) {
+            Gson gson = new Gson();
+            String jsonNotification = gson.toJson(message);
+            connection.send(jsonNotification);
+        }
+    }
+
+    public void broadcast(Integer gameId, ServerMessage notification, String authToken) throws IOException {
         var removeList = new ArrayList<Connection>();
         Gson gson = new Gson();
 
         for (var c : connections.values()) {
-            System.out.println(c.gameId);
             if (c.session.isOpen()) {
-                if (c.gameId.equals(gameId)) {
+                if (c.gameId.equals(gameId) && !c.authToken.equals(authToken)) {
                     String jsonNotification = gson.toJson(notification);
                     c.send(jsonNotification);
                 }

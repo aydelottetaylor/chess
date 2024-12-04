@@ -36,7 +36,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(NotificationMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
+        System.out.println(SET_TEXT_COLOR_YELLOW + notification.getMessage());
         printPrompt(client.getState());
     }
 
@@ -46,8 +46,13 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(LoadGameMessage notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.getGame());
-        printPrompt(client.getState());
+        try {
+            client.currentGame = notification.getGame();
+            System.out.print("\n" + client.redrawBoard());
+            printPrompt(client.getState());
+        } catch (Exception ex) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error loading game.");
+        }
     }
 
     private void printPrompt(String state) {

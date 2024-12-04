@@ -20,6 +20,10 @@ public class Client {
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     private State state = State.SIGNED_OUT;
+    public GameData currentGame;
+    private String currentColor;
+    private Integer currentGameNumber;
+
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -41,10 +45,75 @@ public class Client {
                 case "register" -> registerUser(params);
                 case "login" -> loginUser(params);
                 case "logout" -> logoutUser();
+                case "redrawboard" -> redrawBoard();
+                case "leave" -> leaveGame();
+                case "resign" -> resignPrompt();
+                case "yes" -> resign();
+                case "makemove" -> makeMove(params);
                 default -> help();
             };
         } catch (Exception ex) {
             return ex.getMessage();
+        }
+    }
+
+    public String makeMove(String ... params) throws Exception {
+        if (state == State.IN_GAME) {
+            if (params.length == 2) {
+                // Get positions
+                String start = params[0];
+                String end = params[1];
+                int startcol = (start.charAt(0) - 'a') + 1;
+                int startrow = start.charAt(1) - '0';
+                int endcol = (end.charAt(0) - 'a') + 1;
+                int endrow = end.charAt(1) - '0';
+
+
+
+                return "";
+            } else {
+                throw new ClientException(400, "Expected: makeMove <starting position> <ending position>");
+            }
+        } else {
+            throw new ClientException(400, "Not in game, cannot make a move");
+        }
+    }
+
+    public String resign() throws Exception {
+        ws.resignGame(authData, currentGame.gameID());
+        return "";
+    }
+
+    public String resignPrompt() throws Exception {
+        if (state == State.IN_GAME) {
+            return "Are you sure you would like to resign? If so, reply 'yes' ";
+        } else {
+            throw new ClientException(400, "Unable to resign");
+        }
+    }
+
+    public String leaveGame() throws Exception {
+        if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
+            try {
+                ws.leaveGame(authData, currentGame.gameID());
+                ws = null;
+                state = State.SIGNED_IN;
+                return "Left game successfully.";
+            } catch (Exception ex) {
+                throw new ClientException(500, "Error leaving game");
+            }
+        } else {
+            throwNewJoinGame();
+            return "";
+        }
+    }
+
+    public String redrawBoard() throws Exception {
+        if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
+            return gameToString(currentGame, currentColor);
+        } else {
+            throwNewJoinGame();
+            return "";
         }
     }
 
@@ -63,16 +132,19 @@ public class Client {
                 throw new ClientException(400, "Incorrect game number. Please check the game number and try again.");
             }
             if (params.length == 2) {
-                var number =  gameNumber - 1;
-                GameData game = games.get(number);
-                server.joinGame(new JoinGameData(params[1].toUpperCase(), game.gameID()), authData.authToken());
+                currentGameNumber =  gameNumber - 1;
+                currentGame = games.get(currentGameNumber);
+                currentColor = params[1].toUpperCase();
+                server.joinGame(new JoinGameData(currentColor, currentGame.gameID()), authData.authToken());
                 state = State.IN_GAME;
                 ws = new WebSocketFacade(serverUrl, notificationHandler);
-                ws.joinGame(authData, number);
-                return gameToString(game, params[1].toUpperCase());
+                ws.joinGame(authData, currentGame.gameID());
+                return "Good Luck!";
             } else {
                 throw new ClientException(400, "Expected: <GameNumber> <Color>");
             }
+        } else if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
+            throw new ClientException(400, "Leave game first to join new game");
         } else {
             throwLoggedOut();
             return "";
@@ -93,11 +165,15 @@ public class Client {
             if(gameNumber > games.size()) {
                 throw new ClientException(400, "Incorrect game number. Please check the game number and try again.");
             }
-            var number =  gameNumber - 1;
-            GameData game = games.get(number);
-            state = State.IN_GAME;
-//            ws = new WebSocketFacade(serverUrl, notificationHandler);
-            return gameToString(game, "WHITE");
+            currentGameNumber =  gameNumber - 1;
+            currentGame = games.get(currentGameNumber);
+            currentColor = "WHITE";
+            state = State.OBSERVING_GAME;
+            ws = new WebSocketFacade(serverUrl, notificationHandler);
+            ws.joinGame(authData, currentGame.gameID());
+            return "Enjoy!";
+        } else if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
+            throw new ClientException(400, "Leave game first to observe new game");
         } else {
             throwLoggedOut();
             return "";
@@ -118,7 +194,7 @@ public class Client {
                             .append(", Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername())
                             .append("\n");
                 }
-                result.append("\nIf a player is 'none' on a game, game is joinable with that user.");
+                result.append("\nIf a player is 'None' on a game, game is joinable with that user.");
                 return result.toString();
             } catch (Exception ex) {
                 return ex.toString();
@@ -207,6 +283,10 @@ public class Client {
         games = server.fetchAllGames(authData.authToken());
     }
 
+    private void throwNewJoinGame() throws Exception {
+        throw new ClientException(400, "Please join a game first!!");
+    }
+
     private void throwLoggedOut() throws Exception {
         throw new ClientException(400, "Logged out, cannot perform command.");
     }
@@ -230,13 +310,13 @@ public class Client {
             if (i == 0 || i == 9) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
                         +  SET_TEXT_COLOR_WHITE
-                        + "    h   g   f  e   d   c  b   a    "
+                        + "    a   b   c  d   e   f  g   h    "
                         + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
                 for (int j = 0; j < 10; j++) {
                     if (j == 0 || j == 9) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                append(i).append(" ").append(RESET_BG_COLOR);
+                                append(9 - i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, j);
@@ -250,7 +330,7 @@ public class Client {
                 for (int k = 0; k < 10; k++) {
                     if (k == 0 || k == 9) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                append(i).append(" ").append(RESET_BG_COLOR);
+                                append(9 - i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, k);
@@ -269,13 +349,14 @@ public class Client {
             if (i == 9 || i == 0) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
                         + SET_TEXT_COLOR_WHITE
-                        + "    a   b   c  d   e   f  g   h    " // Columns are in reverse order
+
+                        + "    h   g   f  e   d   c  b   a    " // Columns are in reverse order
                         + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
                 for (int j = 9; j >= 0; j--) { // Loop backwards for columns
                     if (j == 9 || j == 0) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
-                                .append(i).append(" ").append(RESET_BG_COLOR);
+                                .append(9 - i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
                         addPiece(board, i, j);
@@ -289,7 +370,7 @@ public class Client {
                 for (int k = 9; k >= 0; k--) { // Loop backwards for columns
                     if (k == 9 || k == 0) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
-                                .append(i).append(" ").append(RESET_BG_COLOR);
+                                .append(9 - i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
                         addPiece(board, i, k);
