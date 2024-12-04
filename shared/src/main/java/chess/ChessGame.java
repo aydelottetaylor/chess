@@ -121,13 +121,13 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = currentBoard.getPiece(move.getStartPosition());
         if(piece == null || piece.getTeamColor() != this.teamTurn) {
-            throw new InvalidMoveException("Its not this team's turn.");
+            throw new InvalidMoveException("Error: Its not this team's turn.");
         }
 
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
 
         if (!validMoves.contains(move)) {
-            throw new InvalidMoveException("Invalid move!");
+            throw new InvalidMoveException("Error: Invalid move!");
         }
 
         currentBoard.makeMove(move, this.teamTurn);

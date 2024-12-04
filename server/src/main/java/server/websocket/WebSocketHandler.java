@@ -1,6 +1,7 @@
 package server.websocket;
 
-import com.google.gson.Gson;
+import chess.*;
+import com.google.gson.*;
 import dataaccess.*;
 import service.*;
 import model.*;
@@ -8,10 +9,12 @@ import server.ServerException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.*;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Timer;
 
 import static websocket.commands.UserGameCommand.CommandType.*;
@@ -28,13 +31,43 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(UserGameCommand.class, new UserGameCommandDeserializer())
+                .create();
+
+        UserGameCommand action = gson.fromJson(message, UserGameCommand.class);
 
         switch (action.getCommandType()) {
             case CONNECT -> connectGame(action.getAuthToken(), action.getGameID(), session);
-            case MAKE_MOVE -> makeMove(action.getAuthToken(), action.getGameID(), action.getMove());
+            case MAKE_MOVE -> {
+                if (action instanceof MakeMoveCommand) {
+                    MakeMoveCommand makeMoveAction = (MakeMoveCommand) action;
+                    makeMove(makeMoveAction.getAuthToken(), makeMoveAction.getGameID(), makeMoveAction.getMove());
+                } else {
+                    System.err.println("Invalid MAKE_MOVE command received.");
+                }
+            }
             case LEAVE -> leaveGame(action.getAuthToken(), action.getGameID(), session);
             case RESIGN -> resignGame(action.getAuthToken(), action.getGameID(), session);
+        }
+    }
+
+    public class UserGameCommandDeserializer implements JsonDeserializer<UserGameCommand> {
+        @Override
+        public UserGameCommand deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+
+            // Get the commandType field
+            String commandTypeString = jsonObject.get("commandType").getAsString();
+            UserGameCommand.CommandType commandType = UserGameCommand.CommandType.valueOf(commandTypeString);
+
+            // Switch to handle specific subclasses
+            switch (commandType) {
+                case MAKE_MOVE:
+                    return new Gson().fromJson(json, MakeMoveCommand.class); // Deserialize as MakeMoveCommand
+                default:
+                    return new Gson().fromJson(json, UserGameCommand.class); // Default to UserGameCommand
+            }
         }
     }
 
@@ -69,8 +102,23 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String visitorName) {
+    private void makeMove(String authToken, Integer gameId, ChessMove move) throws ServerException {
+        try {
+            GameData game = gameDataAccess.getGameById(gameId);
+            System.out.println(game);
+            ChessGame chessGame = game.getGame();
+            chessGame.makeMove(move);
 
+
+
+        } catch (Exception ex) {
+            try {
+                var notification = new ErrorMessage(ex.getMessage());
+                connections.sendErrorMessage(notification, authToken);
+            } catch (IOException e) {
+                throw new ServerException(400, "WebsocketHandler Make Move Error " + ex.getMessage());
+            }
+        }
     }
 
     private void leaveGame(String authToken, Integer gameId, Session session) throws ServerException {
