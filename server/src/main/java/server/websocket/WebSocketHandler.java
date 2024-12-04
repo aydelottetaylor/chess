@@ -108,27 +108,26 @@ public class WebSocketHandler {
             if (auth == null) {
                 var message = String.format("ERROR: Invalid auth token ");
                 var notification = new ErrorMessage(message);
+                System.out.println(authToken);
                 connections.sendErrorMessage(notification, authToken);
+            } else {
+                GameData game = gameDataAccess.getGameById(gameId);
+                ChessGame chessGame = game.getGame();
+                chessGame.makeMove(move);
+
+                GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
+                gameDataAccess.setGameById(gameId, newGame);
+
+                game = gameDataAccess.getGameById(gameId);
+
+                var gameNotification = new LoadGameMessage(game);
+                connections.broadcastGame(gameNotification, gameId);
+
+                UserData user = userService.getUserOnAuthToken(authToken);
+                var message = String.format("User %s has made their move.", user.getUsername());
+                var notification = new NotificationMessage(message);
+                connections.broadcast(gameId, notification, authToken);
             }
-
-            GameData game = gameDataAccess.getGameById(gameId);
-            System.out.println(move);
-            ChessGame chessGame = game.getGame();
-            System.out.println(chessGame.getBoard().getPiece(move.getStartPosition()));
-            chessGame.makeMove(move);
-
-            GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
-            gameDataAccess.setGameById(gameId, newGame);
-
-            game = gameDataAccess.getGameById(gameId);
-
-            var gameNotification = new LoadGameMessage(game);
-            connections.broadcastGame(gameNotification, gameId);
-
-            UserData user = userService.getUserOnAuthToken(authToken);
-            var message = String.format("User %s has made their move.", user.getUsername());
-            var notification = new NotificationMessage(message);
-            connections.broadcast(gameId, notification, authToken);
         } catch (Exception ex) {
             try {
                 var notification = new ErrorMessage(ex.getMessage());

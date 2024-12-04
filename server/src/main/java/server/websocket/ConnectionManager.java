@@ -32,6 +32,11 @@ public class ConnectionManager {
 
     public void sendErrorMessage(ErrorMessage message, String authToken) throws IOException {
         var connection = connections.get(authToken);
+        for (var c : connections.values()) {
+            System.out.println(c.authToken);
+            System.out.println(c.gameId);
+            System.out.println(c.session);
+        }
         if (connection != null) {
             Gson gson = new Gson();
             String jsonNotification = gson.toJson(message);
