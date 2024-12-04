@@ -189,7 +189,12 @@ public class WebSocketHandler {
         try {
             GameData game = gameDataAccess.getGameById(gameId);
             UserData user = userService.getUserOnAuthToken(authToken);
-            
+            if (!Objects.equals(user.username(), game.whiteUsername()) && !Objects.equals(user.username(), game.blackUsername())) {
+                var message = String.format("ERROR: Cannot resign game as observer");
+                var notification = new ErrorMessage(message);
+                connections.sendErrorMessage(notification, authToken);
+                return;
+            }
             var message = String.format("User %s has resigned!", user.getUsername());
             var notification = new NotificationMessage(message);
             connections.broadcast(gameId, notification, null);
