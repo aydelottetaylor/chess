@@ -188,13 +188,30 @@ public class WebSocketHandler {
     private void resignGame(String authToken, Integer gameId, Session session) throws ServerException {
         try {
             GameData game = gameDataAccess.getGameById(gameId);
+            ChessGame chessGame = game.getGame();
+            ChessBoard chessBoard = chessGame.getBoard();
             UserData user = userService.getUserOnAuthToken(authToken);
+
+            if (chessBoard.getPiece(new ChessPosition(0, 0)) != null) {
+                var message = String.format("ERROR: Cannot resign, already resigned.");
+                var notification = new ErrorMessage(message);
+                connections.sendErrorMessage(notification, authToken);
+                return;
+            }
+
             if (!Objects.equals(user.username(), game.whiteUsername()) && !Objects.equals(user.username(), game.blackUsername())) {
                 var message = String.format("ERROR: Cannot resign game as observer");
                 var notification = new ErrorMessage(message);
                 connections.sendErrorMessage(notification, authToken);
                 return;
             }
+
+            // Mark game as resigned
+            chessBoard.addPiece(new ChessPosition(0, 0), new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN));
+            chessGame.setBoard(chessBoard);
+            GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
+            gameDataAccess.setGameById(gameId, newGame);
+
             var message = String.format("User %s has resigned!", user.getUsername());
             var notification = new NotificationMessage(message);
             connections.broadcast(gameId, notification, null);

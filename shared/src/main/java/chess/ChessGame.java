@@ -65,6 +65,10 @@ public class ChessGame {
         BLACK
     }
 
+    public void setChessBoard(ChessBoard board) {
+        this.currentBoard = board;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
