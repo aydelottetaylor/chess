@@ -30,13 +30,23 @@ public class ConnectionManager {
         }
     }
 
+    public void sendErrorMessageNoAuth(String message, Session session) {
+        if (session != null && session.isOpen()) {
+            try {
+                ErrorMessage errorMessage = new ErrorMessage(message);
+                Gson gson = new Gson();
+                String jsonNotification = gson.toJson(errorMessage);
+                session.getRemote().sendString(jsonNotification);
+            } catch (IOException ex) {
+                System.err.println("Failed to send error message");
+            }
+        } else {
+            System.err.println("Session is null or closed, unable to send message.");
+        }
+    }
+
     public void sendErrorMessage(ErrorMessage message, String authToken) throws IOException {
         var connection = connections.get(authToken);
-        for (var c : connections.values()) {
-            System.out.println(c.authToken);
-            System.out.println(c.gameId);
-            System.out.println(c.session);
-        }
         if (connection != null) {
             Gson gson = new Gson();
             String jsonNotification = gson.toJson(message);

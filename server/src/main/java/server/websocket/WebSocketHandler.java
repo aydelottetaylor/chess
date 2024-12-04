@@ -42,7 +42,7 @@ public class WebSocketHandler {
             case MAKE_MOVE -> {
                 if (action instanceof MakeMoveCommand) {
                     MakeMoveCommand makeMoveAction = (MakeMoveCommand) action;
-                    makeMove(makeMoveAction.getAuthToken(), makeMoveAction.getGameID(), makeMoveAction.getMove());
+                    makeMove(makeMoveAction.getAuthToken(), makeMoveAction.getGameID(), makeMoveAction.getMove(), session);
                 } else {
                     System.err.println("Invalid MAKE_MOVE command received.");
                 }
@@ -102,14 +102,12 @@ public class WebSocketHandler {
         }
     }
 
-    private void makeMove(String authToken, Integer gameId, ChessMove move) throws ServerException {
+    private void makeMove(String authToken, Integer gameId, ChessMove move, Session session) throws ServerException {
         try {
             AuthData auth = authDataAccess.getAuthInfoByToken(authToken);
             if (auth == null) {
                 var message = String.format("ERROR: Invalid auth token ");
-                var notification = new ErrorMessage(message);
-                System.out.println(authToken);
-                connections.sendErrorMessage(notification, authToken);
+                connections.sendErrorMessageNoAuth(message, session);
             } else {
                 GameData game = gameDataAccess.getGameById(gameId);
                 ChessGame chessGame = game.getGame();
