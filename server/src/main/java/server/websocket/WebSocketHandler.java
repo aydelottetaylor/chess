@@ -115,6 +115,13 @@ public class WebSocketHandler {
                 ChessGame chessGame = game.getGame();
                 ChessBoard board = chessGame.getBoard();
 
+                if (board.getPiece(new ChessPosition(0, 0)) != null) {
+                    var message = String.format("ERROR: Cannot move, game has been resigned.");
+                    var notification = new ErrorMessage(message);
+                    connections.sendErrorMessage(notification, authToken);
+                    return;
+                }
+
                 if (board.getPiece(start).pieceColor == ChessGame.TeamColor.BLACK) {
                     if (!Objects.equals(auth.username(), game.blackUsername())) {
                         var message = String.format("ERROR: Cannot make move for other color or as observer");
