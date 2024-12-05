@@ -122,14 +122,12 @@ public class WebSocketHandler {
                     connections.sendErrorMessage(notification, authToken);
                     return;
                 }
-
                 if (board.getPiece(move.getStartPosition()) == null) {
                     var message = String.format("ERROR: Cannot move, piece does not exist at given position.");
                     var notification = new ErrorMessage(message);
                     connections.sendErrorMessage(notification, authToken);
                     return;
                 }
-
                 if (board.getPiece(start).pieceColor == ChessGame.TeamColor.BLACK) {
                     if (!Objects.equals(auth.username(), game.blackUsername())) {
                         var message = String.format("ERROR: Cannot make move for other color or as observer");
@@ -145,7 +143,6 @@ public class WebSocketHandler {
                         return;
                     }
                 }
-
                 if(gameDataAccess.getGameById(gameId).getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
                     var message = String.format("ERROR: Cannot make move, %s is checkmate!", game.blackUsername());
                     var notification = new ErrorMessage(message);
@@ -163,17 +160,12 @@ public class WebSocketHandler {
                     connections.sendErrorMessage(notification, authToken);
                     return;
                 }
-
                 chessGame.makeMove(move);
-
                 GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
                 gameDataAccess.setGameById(gameId, newGame);
-
                 game = gameDataAccess.getGameById(gameId);
-
                 var gameNotification = new LoadGameMessage(game);
                 connections.broadcastGame(gameNotification, gameId);
-
                 UserData user = userService.getUserOnAuthToken(authToken);
                 var message = String.format("User %s has made their move.", user.getUsername());
                 var notification = new NotificationMessage(message);

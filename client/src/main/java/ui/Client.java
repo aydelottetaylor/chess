@@ -63,43 +63,34 @@ public class Client {
                 String position = params[0];
                 int col = (position.charAt(0) - 'a') + 1;
                 int row = position.charAt(1) - '0';
-                if (col > 9 || col < 1 || row > 9 || row < 1) {
-                    throw new ClientException(400, "Not a valid position.");
-                }
-
                 ChessGame game = currentGame.game();
                 ChessBoard board = game.getBoard();
                 if (board.getPiece(new ChessPosition(row, col)) == null) {
                     throw new ClientException(400, "No piece at position.");
                 }
                 Collection<ChessMove> moves = game.validMoves(new ChessPosition(row, col));
-
                 for (ChessMove move : moves) {
                     positions.add(move.getEndPosition());
                 }
-
                 String returnString = redrawBoard();
                 positions = new ArrayList<>();
                 return returnString;
             } else {
                 throw new ClientException(400, "Expected: highlightMoves <position>");
             }
-        } else {
-            throw new ClientException(400, "Cannot highlight moves, not in game");
         }
+        throw new ClientException(400, "Cannot highlight moves, not in game");
     }
 
     public String makeMove(String ... params) throws Exception {
         if (state == State.IN_GAME) {
             if (params.length >= 2) {
-                // Get positions
                 String start = params[0];
                 String end = params[1];
                 int startcol = (start.charAt(0) - 'a') + 1;
                 int startrow = start.charAt(1) - '0';
                 int endcol = (end.charAt(0) - 'a') + 1;
                 int endrow = end.charAt(1) - '0';
-
                 ChessPiece.PieceType type = null;
                 if (params.length == 3) {
                     switch (params[2]) {
@@ -109,31 +100,25 @@ public class Client {
                         case "rook" -> type = ChessPiece.PieceType.ROOK;
                     }
                 }
-
                 ChessPosition startPosition = new ChessPosition(startrow, startcol);
                 ChessPosition endPosition = new ChessPosition(endrow, endcol);
-
                 ChessGame game = currentGame.game();
                 ChessBoard board = game.getBoard();
                 if (board.getPiece(startPosition) == null) {
                     throw new ClientException(400, "No piece at position.");
                 }
-
                 Collection<ChessMove> moves = game.validMoves(startPosition);
                 ChessMove move = new ChessMove(startPosition, endPosition, type);
                 if (!moves.contains(move)) {
                     throw new ClientException(400, "Cannot make move.");
                 }
-
                 ws.makeMove(authData, currentGame.gameID(), move);
-
                 return "";
             } else {
                 throw new ClientException(400, "Expected: makeMove <starting position> <ending position> <promotionpiece>");
             }
-        } else {
-            throw new ClientException(400, "Not in game, cannot make a move");
         }
+        throw new ClientException(400, "Not in game, cannot make a move");
     }
 
     public String resign() throws Exception {
@@ -142,11 +127,7 @@ public class Client {
     }
 
     public String resignPrompt() throws Exception {
-        if (state == State.IN_GAME) {
-            return "Are you sure you would like to resign? If so, reply 'yes' ";
-        } else {
-            throw new ClientException(400, "Unable to resign");
-        }
+        return "Are you sure you would like to resign? If so, reply 'yes' ";
     }
 
     public String leaveGame() throws Exception {
@@ -159,19 +140,15 @@ public class Client {
             } catch (Exception ex) {
                 throw new ClientException(500, "Error leaving game");
             }
-        } else {
-            throwNewJoinGame();
-            return "";
         }
+        throw new ClientException(400, "Please join a game first!!");
     }
 
     public String redrawBoard() throws Exception {
         if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
             return gameToString(currentGame, currentColor);
-        } else {
-            throwNewJoinGame();
-            return "";
         }
+        throw new ClientException(400, "Please join a game first!!");
     }
 
     public String playGame(String... params) throws Exception {
@@ -185,9 +162,6 @@ public class Client {
             } catch (Exception ex) {
                 throw new ClientException(400, "Number not given for GameNumber.");
             }
-            if(gameNumber > games.size()) {
-                throw new ClientException(400, "Incorrect game number. Please check the game number and try again.");
-            }
             if (params.length == 2) {
                 currentGameNumber =  gameNumber - 1;
                 currentGame = games.get(currentGameNumber);
@@ -200,12 +174,8 @@ public class Client {
             } else {
                 throw new ClientException(400, "Expected: <GameNumber> <Color>");
             }
-        } else if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
-            throw new ClientException(400, "Leave game first to join new game");
-        } else {
-            throwLoggedOut();
-            return "";
         }
+        throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
     public String observeGame(String... params) throws Exception {
@@ -231,35 +201,26 @@ public class Client {
             return "Enjoy!";
         } else if (state == State.IN_GAME || state == State.OBSERVING_GAME) {
             throw new ClientException(400, "Leave game first to observe new game");
-        } else {
-            throwLoggedOut();
-            return "";
         }
+        throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
     public String listGames() throws Exception {
         if (state == State.SIGNED_IN) {
-            try {
-                fetchGames();
-
-                StringBuilder result = new StringBuilder("Games\n");
-                for (int i = 0; i < games.size(); i++) {
-                    GameData game = games.get(i);
-                    result.append(i + 1)
-                            .append(": ").append(game.gameName())
-                            .append(", White Player: ").append(game.whiteUsername() == null ? "None" : game.whiteUsername())
-                            .append(", Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername())
-                            .append("\n");
-                }
-                result.append("\nIf a color's player is 'None' on a game, game is joinable with that color.");
-                return result.toString();
-            } catch (Exception ex) {
-                return ex.toString();
+            fetchGames();
+            StringBuilder result = new StringBuilder("Games\n");
+            for (int i = 0; i < games.size(); i++) {
+                GameData game = games.get(i);
+                result.append(i + 1)
+                        .append(": ").append(game.gameName())
+                        .append(", White Player: ").append(game.whiteUsername() == null ? "None" : game.whiteUsername())
+                        .append(", Black Player: ").append(game.blackUsername() == null ? "None" : game.blackUsername())
+                        .append("\n");
             }
-        } else {
-            throwLoggedOut();
-            return "";
+            result.append("\nIf a color's player is 'None' on a game, game is joinable with that color.");
+            return result.toString();
         }
+        throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
     public String createGame(String... params) throws Exception {
@@ -274,21 +235,15 @@ public class Client {
                 return "Game created successfully!\nList Games to see available games!";
             }
             throw new ClientException(500, "Expected: <GameName>");
-        } else {
-            throwLoggedOut();
-            return "";
         }
+        throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
     public String registerUser(String... params) throws Exception {
         if (params.length == 3) {
             UserData user = new UserData(params[0], params[1], params[2]);
             AuthData auth;
-            try {
-                auth = server.registerUser(user);
-            } catch (Exception ex) {
-                return ex.getMessage();
-            }
+            auth = server.registerUser(user);
             if (auth != null) {
                 authData = auth;
                 state = State.SIGNED_IN;
@@ -332,33 +287,22 @@ public class Client {
                 throw new ClientException(500, ex.getMessage());
             }
         }
-        throwLoggedOut();
-        return "";
+        throw new ClientException(400, "Logged out, cannot perform command.");
     }
 
     private void fetchGames() throws Exception {
         games = server.fetchAllGames(authData.authToken());
     }
 
-    private void throwNewJoinGame() throws Exception {
-        throw new ClientException(400, "Please join a game first!!");
-    }
-
-    private void throwLoggedOut() throws Exception {
-        throw new ClientException(400, "Logged out, cannot perform command.");
-    }
-
     private String gameToString(GameData gameData, String color) throws Exception {
         gameString = new StringBuilder();
         ChessGame game = gameData.game();
         ChessBoard board = game.getBoard();
-
         if(Objects.equals(color, "WHITE")) {
             buildBackwardsBoard(board);
         } else if (Objects.equals(color, "BLACK")) {
             buildBoard(board);
         }
-
         return gameString.toString();
     }
 
@@ -371,14 +315,11 @@ public class Client {
         for (int i = 0; i < 10; i++) {
             if (i == 0 || i == 9) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
-                        +  SET_TEXT_COLOR_WHITE
-                        + "    h   g   f  e   d   c  b   a    "
-                        + RESET_BG_COLOR + "\n");
+                        +  SET_TEXT_COLOR_WHITE + "    h   g   f  e   d   c  b   a    " + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
                 for (int j = 9; j >= 0; j--) {
                     if (j == 0 || j == 9) {
-                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").
-                                append(i).append(" ").append(RESET_BG_COLOR);
+                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
                         if (checkPosition(i, j)) {
@@ -422,47 +363,43 @@ public class Client {
         for (int i = 9; i >= 0; i--) { // Loop backwards for rows
             if (i == 9 || i == 0) {
                 gameString.append(SET_BG_COLOR_DARK_GREY
-                        + SET_TEXT_COLOR_WHITE
-
-                        + "    a   b   c  d   e   f  g   h    " // Columns are in reverse order
-                        + RESET_BG_COLOR + "\n");
+                        + SET_TEXT_COLOR_WHITE + "    a   b   c  d   e   f  g   h    " + RESET_BG_COLOR + "\n");
             } else if (i % 2 != 0) {
-                for (int j = 0; j < 10; j++) { // Loop backwards for columns
-                    if (j == 9 || j == 0) {
-                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
-                                .append(i).append(" ").append(RESET_BG_COLOR);
-                    } else if (j % 2 != 0) {
+                for (int t = 0; t < 10; t++) { // Loop backwards for columns
+                    if (t == 9 || t == 0) {
+                        gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").append(i).append(" ").append(RESET_BG_COLOR);
+                    } else if (t % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, j)) {
+                        if (checkPosition(i, t)) {
                             gameString.append(SET_BG_COLOR_DARK_GREEN);
                         }
-                        addPiece(board, i, j);
+                        addPiece(board, i, t);
                     } else {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, j)) {
+                        if (checkPosition(i, t)) {
                             gameString.append(SET_BG_COLOR_GREEN);
                         }
-                        addPiece(board, i, j);
+                        addPiece(board, i, t);
                     }
                 }
                 gameString.append("\n");
             } else {
-                for (int k = 0; k < 10; k++) { // Loop backwards for columns
-                    if (k == 9 || k == 0) {
+                for (int e = 0; e < 10; e++) { // Loop backwards for columns
+                    if (e == 9 || e == 0) {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ")
                                 .append(i).append(" ").append(RESET_BG_COLOR);
-                    } else if (k % 2 != 0) {
+                    } else if (e % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, k)) {
+                        if (checkPosition(i, e)) {
                             gameString.append(SET_BG_COLOR_GREEN);
                         }
-                        addPiece(board, i, k);
+                        addPiece(board, i, e);
                     } else {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, k)) {
+                        if (checkPosition(i, e)) {
                             gameString.append(SET_BG_COLOR_DARK_GREEN);
                         }
-                        addPiece(board, i, k);
+                        addPiece(board, i, e);
                     }
                 }
                 gameString.append("\n");
@@ -481,32 +418,27 @@ public class Client {
                         case BLACK -> gameString.append(WHITE_KING);
                         case WHITE -> gameString.append(BLACK_KING);
                     }
-                }
-                case QUEEN -> {
+                } case QUEEN -> {
                     switch (piece.pieceColor) {
                         case BLACK -> gameString.append(WHITE_QUEEN);
                         case WHITE -> gameString.append(BLACK_QUEEN);
                     }
-                }
-                case ROOK -> {
+                } case ROOK -> {
                     switch (piece.pieceColor) {
                         case BLACK -> gameString.append(WHITE_ROOK);
                         case WHITE -> gameString.append(BLACK_ROOK);
                     }
-                }
-                case BISHOP -> {
+                } case BISHOP -> {
                     switch (piece.pieceColor) {
                         case BLACK -> gameString.append(WHITE_BISHOP);
                         case WHITE -> gameString.append(BLACK_BISHOP);
                     }
-                }
-                case KNIGHT -> {
+                } case KNIGHT -> {
                     switch (piece.pieceColor) {
                         case BLACK -> gameString.append(WHITE_KNIGHT);
                         case WHITE -> gameString.append(BLACK_KNIGHT);
                     }
-                }
-                case PAWN -> {
+                } case PAWN -> {
                     switch (piece.pieceColor) {
                         case BLACK -> gameString.append(WHITE_PAWN);
                         case WHITE -> gameString.append(BLACK_PAWN);
@@ -523,8 +455,7 @@ public class Client {
                     - register <Username> <Password> <Email> - create an account
                     - login <Username> <Password> - to play chess
                     - quit - to exit
-                    - help - get possible commands
-                    """;
+                    - help - get possible commands""";
         } else if (state == State.IN_GAME) {
             return """
                     You can use one of the following commands:
@@ -534,8 +465,7 @@ public class Client {
                                             for <promotion piece> put piece you want pawn to be if getting promoted
                                             if not getting promoted leave blank
                     - resign - resign and forfeit game
-                    - highlightMoves <position> - highlight the legal moves for a piece at a certain position
-                    """;
+                    - highlightMoves <position> - highlight the legal moves for a piece at a certain position""";
         }
         return """
                 Please use one of the following commands:
@@ -545,8 +475,7 @@ public class Client {
                 - playGame <GameNumber> <Color> - to play a game
                 - observeGame <GameNumber> - to watch a game
                 - quit - to exit
-                - help - get possible commands
-                """;
+                - help - get possible commands""";
     }
 
     public String getState() {

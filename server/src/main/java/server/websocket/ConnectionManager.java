@@ -46,11 +46,11 @@ public class ConnectionManager {
     }
 
     public void sendErrorMessage(ErrorMessage message, String authToken) throws IOException {
-        var connection = connections.get(authToken);
-        if (connection != null) {
+        var c = connections.get(authToken);
+        if (c != null) {
             Gson gson = new Gson();
-            String jsonNotification = gson.toJson(message);
-            connection.send(jsonNotification);
+            String notification = gson.toJson(message);
+            c.send(notification);
         }
     }
 
