@@ -311,6 +311,16 @@ public class Client {
         return positions.contains(positionToCheck);
     }
 
+    private void checkThePosition(Integer i, Integer j, String color) {
+        if (checkPosition(i, j)) {
+            if (Objects.equals(color, "BLACK")) {
+                gameString.append(SET_BG_COLOR_DARK_GREEN);
+            } else {
+                gameString.append(SET_BG_COLOR_GREEN);
+            }
+        }
+    }
+
     private void buildBoard(ChessBoard board) {
         for (int i = 0; i < 10; i++) {
             if (i == 0 || i == 9) {
@@ -322,15 +332,11 @@ public class Client {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, j)) {
-                            gameString.append(SET_BG_COLOR_DARK_GREEN);
-                        }
+                        checkThePosition(i, j, "BLACK");
                         addPiece(board, i, j);
                     } else {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, j)) {
-                            gameString.append(SET_BG_COLOR_GREEN);
-                        }
+                        checkThePosition(i, j, "GREY");
                         addPiece(board, i, j);
                     }
                 }
@@ -342,15 +348,11 @@ public class Client {
                                 append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, k)) {
-                            gameString.append(SET_BG_COLOR_GREEN);
-                        }
+                        checkThePosition(i, k, "GREY");
                         addPiece(board, i, k);
                     } else {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, k)) {
-                            gameString.append(SET_BG_COLOR_DARK_GREEN);
-                        }
+                        checkThePosition(i, k, "BLACK");
                         addPiece(board, i, k);
                     }
                 }
@@ -370,15 +372,11 @@ public class Client {
                         gameString.append(SET_BG_COLOR_DARK_GREY + SET_TEXT_COLOR_WHITE + " ").append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (t % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, t)) {
-                            gameString.append(SET_BG_COLOR_DARK_GREEN);
-                        }
+                        checkThePosition(i, t, "BLACK");
                         addPiece(board, i, t);
                     } else {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, t)) {
-                            gameString.append(SET_BG_COLOR_GREEN);
-                        }
+                        checkThePosition(i, t, "GREY");
                         addPiece(board, i, t);
                     }
                 }
@@ -390,15 +388,11 @@ public class Client {
                                 .append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (e % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
-                        if (checkPosition(i, e)) {
-                            gameString.append(SET_BG_COLOR_GREEN);
-                        }
+                        checkThePosition(i, e, "GREY");
                         addPiece(board, i, e);
                     } else {
                         gameString.append(SET_BG_COLOR_BLACK);
-                        if (checkPosition(i, e)) {
-                            gameString.append(SET_BG_COLOR_DARK_GREEN);
-                        }
+                        checkThePosition(i, e, "BLACK");
                         addPiece(board, i, e);
                     }
                 }
