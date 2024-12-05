@@ -68,6 +68,10 @@ public class Client {
                 }
 
                 ChessGame game = currentGame.game();
+                ChessBoard board = game.getBoard();
+                if (board.getPiece(new ChessPosition(row, col)) == null) {
+                    throw new ClientException(400, "No piece at position.");
+                }
                 Collection<ChessMove> moves = game.validMoves(new ChessPosition(row, col));
 
                 for (ChessMove move : moves) {
@@ -110,6 +114,11 @@ public class Client {
                 ChessPosition endPosition = new ChessPosition(endrow, endcol);
 
                 ChessGame game = currentGame.game();
+                ChessBoard board = game.getBoard();
+                if (board.getPiece(startPosition) == null) {
+                    throw new ClientException(400, "No piece at position.");
+                }
+
                 Collection<ChessMove> moves = game.validMoves(startPosition);
                 ChessMove move = new ChessMove(startPosition, endPosition, type);
                 if (!moves.contains(move)) {
