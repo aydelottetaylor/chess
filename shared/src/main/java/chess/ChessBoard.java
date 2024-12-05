@@ -56,7 +56,6 @@ public class ChessBoard {
     }
 
     public void makeMove(ChessMove move, ChessGame.TeamColor teamTurn) {
-
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
 

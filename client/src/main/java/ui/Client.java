@@ -108,7 +108,13 @@ public class Client {
 
                 ChessPosition startPosition = new ChessPosition(startrow, startcol);
                 ChessPosition endPosition = new ChessPosition(endrow, endcol);
+
+                ChessGame game = currentGame.game();
+                Collection<ChessMove> moves = game.validMoves(startPosition);
                 ChessMove move = new ChessMove(startPosition, endPosition, type);
+                if (!moves.contains(move)) {
+                    throw new ClientException(400, "Cannot make move.");
+                }
 
                 ws.makeMove(authData, currentGame.gameID(), move);
 

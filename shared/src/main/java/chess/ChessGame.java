@@ -78,7 +78,6 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = currentBoard.getPiece(startPosition);
-
         if (piece == null) {
             return null;
         }
@@ -94,10 +93,10 @@ public class ChessGame {
                 if(!isInCheck(piece.getTeamColor())) {
                     validMoves.add(move);
                 }
+                currentBoard = new ChessBoard(tempBoard);
             } catch (Exception e) {
                 throw e;
             }
-            currentBoard = new ChessBoard(tempBoard);
         }
 
         return validMoves;
@@ -105,14 +104,17 @@ public class ChessGame {
 
     public ChessPiece[][] copyBoard(ChessBoard currentBoard) {
         ChessPiece[][] newBoard = new ChessPiece[9][9];
-    
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 ChessPosition newPosition = new ChessPosition(i, j);
-                newBoard[i][j] = this.currentBoard.getPiece(newPosition);
+                ChessPiece originalPiece = currentBoard.getPiece(newPosition);
+                if (originalPiece != null) {
+                    newBoard[i][j] = new ChessPiece(originalPiece.getTeamColor(), originalPiece.getPieceType()); // Assuming a copy constructor exists
+                }
             }
         }
-    
+
         return newBoard;
     }
 
@@ -129,14 +131,10 @@ public class ChessGame {
         }
 
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
-        System.out.println(move);
-        System.out.println(validMoves);
 
         if (!validMoves.contains(move)) {
-            System.out.println("Not in valid moves");
             throw new InvalidMoveException("Error: Invalid move!");
         } else {
-            System.out.println("Somehow made it to valid moves");
             currentBoard.makeMove(move, this.teamTurn);
             this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         }

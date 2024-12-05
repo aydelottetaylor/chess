@@ -15,6 +15,7 @@ import websocket.messages.*;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Timer;
 
@@ -122,6 +123,13 @@ public class WebSocketHandler {
                     return;
                 }
 
+                if (board.getPiece(move.getStartPosition()) == null) {
+                    var message = String.format("ERROR: Cannot move, piece does not exist at given position.");
+                    var notification = new ErrorMessage(message);
+                    connections.sendErrorMessage(notification, authToken);
+                    return;
+                }
+
                 if (board.getPiece(start).pieceColor == ChessGame.TeamColor.BLACK) {
                     if (!Objects.equals(auth.username(), game.blackUsername())) {
                         var message = String.format("ERROR: Cannot make move for other color or as observer");
@@ -138,24 +146,23 @@ public class WebSocketHandler {
                     }
                 }
 
-                if(chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                if(gameDataAccess.getGameById(gameId).getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
                     var message = String.format("ERROR: Cannot make move, %s is checkmate!", game.blackUsername());
                     var notification = new ErrorMessage(message);
                     connections.sendErrorMessage(notification, authToken);
                     return;
-                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                } else if (gameDataAccess.getGameById(gameId).getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
                     var message = String.format("ERROR: Cannot make move, %s is checkmate!", game.whiteUsername());
                     var notification = new ErrorMessage(message);
                     connections.sendErrorMessage(notification, authToken);
                     return;
-                } else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK) || chessGame.isInStalemate(ChessGame.TeamColor.WHITE)) {
+                } else if (gameDataAccess.getGameById(gameId).getGame().isInStalemate(ChessGame.TeamColor.BLACK) ||
+                        gameDataAccess.getGameById(gameId).getGame().isInStalemate(ChessGame.TeamColor.WHITE)) {
                     var message = String.format("ERROR: Cannot make move, is in stalemate!");
                     var notification = new ErrorMessage(message);
                     connections.sendErrorMessage(notification, authToken);
                     return;
                 }
-
-                System.out.println(chessGame);
 
                 chessGame.makeMove(move);
 
@@ -172,20 +179,20 @@ public class WebSocketHandler {
                 var notification = new NotificationMessage(message);
                 connections.broadcast(gameId, notification, authToken);
 
-                if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
-                    var newmessage = "Black is in check!";
+                if (gameDataAccess.getGameById(gameId).getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    var newmessage = "White is in checkmate!";
                     var newnotification = new NotificationMessage(newmessage);
                     connections.broadcast(gameId, newnotification, null);
-                } else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
-                    var newmessage = "White is in check!";
-                    var newnotification = new NotificationMessage(newmessage);
-                    connections.broadcast(gameId, newnotification, null);
-                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                } else if (gameDataAccess.getGameById(gameId).getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
                     var newmessage = "Black is in checkmate!";
                     var newnotification = new NotificationMessage(newmessage);
                     connections.broadcast(gameId, newnotification, null);
-                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                    var newmessage = "White is in checkmate!";
+                } else if (gameDataAccess.getGameById(gameId).getGame().isInCheck(ChessGame.TeamColor.BLACK)) {
+                    var newmessage = "Black is in check!";
+                    var newnotification = new NotificationMessage(newmessage);
+                    connections.broadcast(gameId, newnotification, null);
+                } else if (gameDataAccess.getGameById(gameId).getGame().isInCheck(ChessGame.TeamColor.WHITE)) {
+                    var newmessage = "White is in check!";
                     var newnotification = new NotificationMessage(newmessage);
                     connections.broadcast(gameId, newnotification, null);
                 }
