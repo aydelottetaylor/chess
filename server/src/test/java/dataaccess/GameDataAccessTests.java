@@ -182,6 +182,11 @@ public class GameDataAccessTests {
             }
 
             @Override
+            public void setGameById(Integer gameId, GameData gameData) throws Exception {
+
+            }
+
+            @Override
             public GameData getGameByName(String gameName) throws Exception {
                 return null;
             }

@@ -65,6 +65,10 @@ public class ChessGame {
         BLACK
     }
 
+    public void setChessBoard(ChessBoard board) {
+        this.currentBoard = board;
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -74,7 +78,6 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         ChessPiece piece = currentBoard.getPiece(startPosition);
-
         if (piece == null) {
             return null;
         }
@@ -90,10 +93,10 @@ public class ChessGame {
                 if(!isInCheck(piece.getTeamColor())) {
                     validMoves.add(move);
                 }
+                currentBoard = new ChessBoard(tempBoard);
             } catch (Exception e) {
                 throw e;
             }
-            currentBoard = new ChessBoard(tempBoard);
         }
 
         return validMoves;
@@ -101,14 +104,17 @@ public class ChessGame {
 
     public ChessPiece[][] copyBoard(ChessBoard currentBoard) {
         ChessPiece[][] newBoard = new ChessPiece[9][9];
-    
-        for(int i = 1; i <= 8; i++) {
-            for(int j = 1; j <= 8; j++) {
+
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 ChessPosition newPosition = new ChessPosition(i, j);
-                newBoard[i][j] = this.currentBoard.getPiece(newPosition);
+                ChessPiece originalPiece = currentBoard.getPiece(newPosition);
+                if (originalPiece != null) {
+                    newBoard[i][j] = new ChessPiece(originalPiece.getTeamColor(), originalPiece.getPieceType()); // Assuming a copy constructor exists
+                }
             }
         }
-    
+
         return newBoard;
     }
 
@@ -121,18 +127,17 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPiece piece = currentBoard.getPiece(move.getStartPosition());
         if(piece == null || piece.getTeamColor() != this.teamTurn) {
-            throw new InvalidMoveException("Its not this team's turn.");
+            throw new InvalidMoveException("Error: Its not this team's turn.");
         }
 
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
 
         if (!validMoves.contains(move)) {
-            throw new InvalidMoveException("Invalid move!");
+            throw new InvalidMoveException("Error: Invalid move!");
+        } else {
+            currentBoard.makeMove(move, this.teamTurn);
+            this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         }
-
-        currentBoard.makeMove(move, this.teamTurn);
-
-        this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
     }
 
     /**

@@ -1,7 +1,7 @@
 package ui;
 
 import ui.websocket.NotificationHandler;
-import websocketmessages.Notification;
+import websocket.messages.*;
 
 import java.util.Scanner;
 
@@ -35,9 +35,24 @@ public class Repl implements NotificationHandler {
         System.out.println();
     }
 
-    public void notify(Notification notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.message());
+    public void notify(NotificationMessage notification) {
+        System.out.println(SET_TEXT_COLOR_YELLOW + notification.getMessage());
         printPrompt(client.getState());
+    }
+
+    public void notify(ErrorMessage notification) {
+        System.out.println(SET_TEXT_COLOR_RED + notification.getErrorMessage());
+        printPrompt(client.getState());
+    }
+
+    public void notify(LoadGameMessage notification) {
+        try {
+            client.currentGame = notification.getGame();
+            System.out.print("\n" + client.redrawBoard());
+            printPrompt(client.getState());
+        } catch (Exception ex) {
+            System.out.println(SET_TEXT_COLOR_RED + "Error loading game.");
+        }
     }
 
     private void printPrompt(String state) {

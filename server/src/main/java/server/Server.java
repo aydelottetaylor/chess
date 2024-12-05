@@ -1,12 +1,15 @@
 package server;
 
 import com.google.gson.Gson;
+import server.websocket.WebSocketHandler;
 import service.*;
 import dataaccess.*;
 import spark.*;
 import model.*;
 
 import java.util.Map;
+
+import static spark.Spark.*;
 
 public class Server {
     private final Gson serializer = new Gson();
@@ -20,6 +23,8 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        webSocket("/ws", WebSocketHandler.class);
 
         // Register your endpoints and handle exceptions here.
         Spark.post("/user", this::registerUser);
@@ -39,7 +44,7 @@ public class Server {
             return serializer.toJson(Map.of("message", "Route not found"));
         });
 
-        Spark.before((req, res) -> res.type("application/json"));
+        before((req, res) -> res.type("application/json"));
 
         Spark.init();
 
