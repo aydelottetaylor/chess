@@ -182,8 +182,16 @@ public class WebSocketHandler {
 
     private void leaveGame(String authToken, Integer gameId, Session session) throws ServerException {
         try {
-            connections.remove(authToken);
+            GameData game = gameDataAccess.getGameById(gameId);
             UserData user = userService.getUserOnAuthToken(authToken);
+
+            if (Objects.equals(user.username(), game.blackUsername())) {
+                gameDataAccess.addUserToGame("", new JoinGameData("BLACK", gameId));
+            } else if (Objects.equals(user.username(), game.whiteUsername())) {
+                gameDataAccess.addUserToGame("", new JoinGameData("WHITE", gameId));
+            }
+
+            connections.remove(authToken);
             var message = String.format("User %s left the game!", user.getUsername());
             var notification = new NotificationMessage(message);
             connections.broadcast(gameId, notification, authToken);

@@ -1,8 +1,6 @@
 package ui;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import chess.*;
 import model.*;
@@ -23,6 +21,7 @@ public class Client {
     public GameData currentGame;
     private String currentColor;
     private Integer currentGameNumber;
+    private static ArrayList<ChessPosition> positions = new ArrayList<>();
 
 
     public Client(String serverUrl, NotificationHandler notificationHandler) {
@@ -50,10 +49,39 @@ public class Client {
                 case "resign" -> resignPrompt();
                 case "yes" -> resign();
                 case "makemove" -> makeMove(params);
+                case "highlightmoves" -> highlightMoves(params);
                 default -> help();
             };
         } catch (Exception ex) {
             return ex.getMessage();
+        }
+    }
+
+    public String highlightMoves(String... params) throws Exception {
+        if (state == State.IN_GAME) {
+            if (params.length == 1) {
+                String position = params[0];
+                int col = (position.charAt(0) - 'a') + 1;
+                int row = position.charAt(1) - '0';
+                if (col > 9 || col < 1 || row > 9 || row < 1) {
+                    throw new ClientException(400, "Not a valid position.");
+                }
+
+                ChessGame game = currentGame.game();
+                Collection<ChessMove> moves = game.validMoves(new ChessPosition(row, col));
+
+                for (ChessMove move : moves) {
+                    positions.add(move.getEndPosition());
+                }
+
+                String returnString = redrawBoard();
+                positions = new ArrayList<>();
+                return returnString;
+            } else {
+                throw new ClientException(400, "Expected: highlightMoves <position>");
+            }
+        } else {
+            throw new ClientException(400, "Cannot highlight moves, not in game");
         }
     }
 
@@ -319,6 +347,11 @@ public class Client {
         return gameString.toString();
     }
 
+    private boolean checkPosition(int row, int col) {
+        ChessPosition positionToCheck = new ChessPosition(row, col);
+        return positions.contains(positionToCheck);
+    }
+
     private void buildBoard(ChessBoard board) {
         for (int i = 0; i < 10; i++) {
             if (i == 0 || i == 9) {
@@ -333,9 +366,15 @@ public class Client {
                                 append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
+                        if (checkPosition(i, j)) {
+                            gameString.append(SET_BG_COLOR_DARK_GREEN);
+                        }
                         addPiece(board, i, j);
                     } else {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        if (checkPosition(i, j)) {
+                            gameString.append(SET_BG_COLOR_GREEN);
+                        }
                         addPiece(board, i, j);
                     }
                 }
@@ -347,9 +386,15 @@ public class Client {
                                 append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        if (checkPosition(i, k)) {
+                            gameString.append(SET_BG_COLOR_GREEN);
+                        }
                         addPiece(board, i, k);
                     } else {
                         gameString.append(SET_BG_COLOR_BLACK);
+                        if (checkPosition(i, k)) {
+                            gameString.append(SET_BG_COLOR_DARK_GREEN);
+                        }
                         addPiece(board, i, k);
                     }
                 }
@@ -373,9 +418,15 @@ public class Client {
                                 .append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (j % 2 != 0) {
                         gameString.append(SET_BG_COLOR_BLACK);
+                        if (checkPosition(i, j)) {
+                            gameString.append(SET_BG_COLOR_DARK_GREEN);
+                        }
                         addPiece(board, i, j);
                     } else {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        if (checkPosition(i, j)) {
+                            gameString.append(SET_BG_COLOR_GREEN);
+                        }
                         addPiece(board, i, j);
                     }
                 }
@@ -387,9 +438,15 @@ public class Client {
                                 .append(i).append(" ").append(RESET_BG_COLOR);
                     } else if (k % 2 != 0) {
                         gameString.append(SET_BG_COLOR_LIGHT_GREY);
+                        if (checkPosition(i, k)) {
+                            gameString.append(SET_BG_COLOR_GREEN);
+                        }
                         addPiece(board, i, k);
                     } else {
                         gameString.append(SET_BG_COLOR_BLACK);
+                        if (checkPosition(i, k)) {
+                            gameString.append(SET_BG_COLOR_DARK_GREEN);
+                        }
                         addPiece(board, i, k);
                     }
                 }
