@@ -155,6 +155,8 @@ public class WebSocketHandler {
                     return;
                 }
 
+                System.out.println(chessGame);
+
                 chessGame.makeMove(move);
 
                 GameData newGame = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame);
@@ -169,6 +171,24 @@ public class WebSocketHandler {
                 var message = String.format("User %s has made their move.", user.getUsername());
                 var notification = new NotificationMessage(message);
                 connections.broadcast(gameId, notification, authToken);
+
+                if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)) {
+                    var newmessage = "Black is in check!";
+                    var newnotification = new NotificationMessage(newmessage);
+                    connections.broadcast(gameId, newnotification, null);
+                } else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)) {
+                    var newmessage = "White is in check!";
+                    var newnotification = new NotificationMessage(newmessage);
+                    connections.broadcast(gameId, newnotification, null);
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                    var newmessage = "Black is in checkmate!";
+                    var newnotification = new NotificationMessage(newmessage);
+                    connections.broadcast(gameId, newnotification, null);
+                } else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    var newmessage = "White is in checkmate!";
+                    var newnotification = new NotificationMessage(newmessage);
+                    connections.broadcast(gameId, newnotification, null);
+                }
             }
         } catch (Exception ex) {
             try {

@@ -129,14 +129,17 @@ public class ChessGame {
         }
 
         Collection<ChessMove> validMoves = validMoves(move.getStartPosition());
+        System.out.println(move);
+        System.out.println(validMoves);
 
         if (!validMoves.contains(move)) {
+            System.out.println("Not in valid moves");
             throw new InvalidMoveException("Error: Invalid move!");
+        } else {
+            System.out.println("Somehow made it to valid moves");
+            currentBoard.makeMove(move, this.teamTurn);
+            this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
         }
-
-        currentBoard.makeMove(move, this.teamTurn);
-
-        this.teamTurn = (this.teamTurn == ChessGame.TeamColor.WHITE) ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
     }
 
     /**
